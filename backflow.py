@@ -10,22 +10,24 @@ from openai import OpenAI
 def arg_or_var(arg: str | None, var: str) -> str | None:
     return arg.strip() if arg else (os.environ[var].strip() if var in os.environ else None)
 
-class Backflow:
+class Audio:
     def __init__(self, path: str):
         self.path = path
+        self.temp = None
         info = sf.info(path)
         if info.format == "WAV":
             suffix = ".flac" if info.frames * info.channels < 17476267 else ".mp3"
             with tempfile.NamedTemporaryFile(mode='w+b', delete=False, suffix=suffix) as f:
                 self.temp = f.name
-        else:
-            self.temp = None
 
-    def __del__(self):
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
         if self.temp:
             os.remove(self.temp)
 
-    # Convert WAV to FLAC.
+    # Lazily encode WAV to FLAC or MP3 depending on size.
     def get_path(self) -> str:
         if self.path:
             if not self.temp:
@@ -42,9 +44,62 @@ class Backflow:
         return self.temp
 
 class OAI:
-    llm_model = "o1-mini"
-    stt_prompt = "🎶 "
-    llm_prompt = """
+    def __init__(self, org: str | None = None, proj: str | None = None):
+        api_key = arg_or_var(None, "OPENAI_API_KEY")
+        if not api_key:
+            raise ValueError("API key is not set")
+        self.client = OpenAI(
+            api_key = api_key,
+            organization = arg_or_var(org, "OPENAI_ORG_ID"),
+            project = arg_or_var(proj, "OPENAI_PROJECT_ID")
+        )
+        self.txt = []
+
+    def __del__(self):
+        self.client.close()
+
+    def transcribe(self, path: str, lang: str | None = None, prompt: str | None = None) -> str:
+        with open(path, 'rb') as f:
+            return "\n".join(s.text.strip() for s in
+                self.client.audio.transcriptions.create(
+                    model = "whisper-1",
+                    response_format = "verbose_json",
+                    language = lang,
+                    prompt = prompt,
+                    file = f
+                ).segments)
+
+    def chat(self, txt: str, prompt: str, model: str) -> str:
+        return self.client.chat.completions.create(
+            model = model,
+            messages = [
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": prompt
+                        },
+                        {
+                            "type": "text",
+                            "text": txt
+                        }
+                    ]
+                }
+            ] if model.startswith("o1") else [
+                {
+                    "role": "system",
+                    "content": prompt
+                },
+                {
+                    "role": "user",
+                    "content": txt
+                }
+            ]
+        ).choices[0].message.content
+
+class Backflow:
+    prompt = """
         You modify hallucinated vocalizations to increase coherence.
         Do not remove or tone down any raunchy language or swearing.
         Preserve vowel sounds to keep rhyming intact. Keep pacing as
@@ -62,101 +117,84 @@ class OAI:
         lyrics at all, do not reply. If you cannot think of anything
         to change, change something anyway. Don't tone down cussing.
     """.strip()
+    stt_prompt = "🎶 "
 
-    def __init__(self, org: str | None = None, proj: str | None = None):
-        api_key = arg_or_var(None, "OPENAI_API_KEY")
-        if not api_key:
-            raise ValueError("API key is not set")
-        self.client = OpenAI(
-            api_key = api_key,
-            organization = arg_or_var(org, "OPENAI_ORG_ID"),
-            project = arg_or_var(proj, "OPENAI_PROJECT_ID")
-        )
-        self.txt = []
+    def __init__(self):
+        args = self._parse_args()
+        self.path = args.path
+        self.model = args.model or "o1-mini"
+        self.lang = args.lang
+        self.nrev = args.nrev
+        style = args.style.strip() if args.style else ""
+        topic = args.topic.strip() if args.topic else ""
+        self.style = "\nThe style or genre of the original lyrics is: " + style + "." if len(style) else ""
+        self.topic = "\nYour work should hint at or gravitate around: " + topic + "." if len(topic) else ""
+        self.transcript = None
+        self.revised = None
+        self.oai = OAI(args.org, args.proj)
+        self.audio = Audio(self.path)
 
-    def __del__(self):
-        self.client.close()
+    def get_transcript(self, force: bool = False) -> str:
+        if not self.transcript or force:
+            try:
+                self.transcript = self.oai.transcribe(self.audio.get_path(), self.lang, self.stt_prompt)
+            except Exception as e:
+                print(f"Failed to transcribe {self.path}: {e}")
+                self.transcript = None
+        return self.transcript
 
-    def transcribe(self, path: str) -> str:
-        with open(path, 'rb') as f:
-            return "\n".join(s.text.strip() for s in
-                self.client.audio.transcriptions.create(
-                    model = "whisper-1",
-                    response_format = "verbose_json",
-                    prompt = self.stt_prompt,
-                    file = f
-                ).segments)
+    def get_revised(self, force: bool = False) -> str:
+        if not self.revised or force:
+            txt = self.get_transcript()
+            n = self.nrev
+            if n > 0:
+                while n := n - 1:
+                    txt = self.oai.chat(txt, self.prompt + self.style + self.topic, self.model)
+            self.revised = txt
+        return self.revised
 
-    def chat(self, msgs: list[dict]) -> str:
-        return self.client.chat.completions.create(
-            model = self.llm_model,
-            messages = msgs
-        ).choices[0].message.content
-
-    def revise(self, txt: str) -> str:
-        return self.chat([
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "text",
-                        "text": self.llm_prompt
-                    },
-                    {
-                        "type": "text",
-                        "text": txt
-                    }
-                ]
-            }
-        ])
-
-def main() -> int:
-    parser = argparse.ArgumentParser(
-        prog="backflow.py",
-        description="Turn hallucinated vocals into almost coherent lyrics",
-        add_help=False,
-        formatter_class=argparse.RawTextHelpFormatter,
-        epilog='''
+    @staticmethod
+    def _parse_args() -> argparse.Namespace:
+        parser = argparse.ArgumentParser(
+            prog="backflow.py",
+            description="Turn hallucinated vocals into almost coherent lyrics",
+            add_help=False,
+            formatter_class=argparse.RawTextHelpFormatter,
+            epilog='''
 Environment variables:
   OPENAI_API_KEY        OpenAI API key, mandatory
   OPENAI_ORG_ID         used if -o is not provided
   OPENAI_PROJECT_ID     used if -p is not provided
 '''
-    )
-    parser.add_argument("path", type=str, metavar="<file>",
-        help="        path to the input audio file")
-    parser.add_argument('-h', '--help', action='help',
-        help="        show this help text and exit")
-    parser.add_argument('-o', type=str, dest="org", default=None, metavar="<org-id>",
-        help="        OpenAI organization ID")
-    parser.add_argument('-p', type=str, dest="proj", default=None, metavar="<proj-id>",
-        help="        OpenAI project ID")
-    parser.add_argument('-l', type=str, dest="lang", default=None, metavar="<code>",
-        help="        ISO 639-1 language code")
-    parser.add_argument('-n', type=int, dest="nrev", default=1, metavar="<n>",
-        help="        number of revisions")
-    parser.add_argument('-s', type=str, dest="style", default=None, metavar="<style>",
-        help="        style hint prompt")
-    parser.add_argument('-t', type=str, dest="topic", default=None, metavar="<topic>",
-        help="        topic hint prompt")
+        )
+        parser.add_argument("path", type=str, metavar="<file>",
+            help="        path to the input audio file")
+        parser.add_argument('-h', '--help', action='help',
+            help="        show this help text and exit")
+        parser.add_argument('-o', type=str, dest="org", default=None, metavar="<org-id>",
+            help="        OpenAI organization ID")
+        parser.add_argument('-p', type=str, dest="proj", default=None, metavar="<proj-id>",
+            help="        OpenAI project ID")
+        parser.add_argument('-l', type=str, dest="lang", default=None, metavar="<code>",
+            help="        ISO 639-1 language code")
+        parser.add_argument('-m', type=str, dest="model", default=None, metavar="<model>",
+            help="        OpenAI LLM model name")
+        parser.add_argument('-n', type=int, dest="nrev", default=1, metavar="<n>",
+            help="        number of revisions")
+        parser.add_argument('-s', type=str, dest="style", default=None, metavar="<style>",
+            help="        style hint prompt")
+        parser.add_argument('-t', type=str, dest="topic", default=None, metavar="<topic>",
+            help="        topic hint prompt")
+        return parser.parse_args()
 
-    arg = parser.parse_args()
-    oai = OAI(arg.org, arg.proj)
-    bfw = Backflow(arg.path)
+def main() -> int:
+    bfw = Backflow()
+    a = bfw.get_transcript()
+    b = bfw.get_revised()
 
-    a = oai.transcribe(bfw.get_path())
-    n = arg.nrev
-
-    if n > 0:
-        b = a
-        while n := n - 1:
-            b = oai.revise(b)
-    else:
-        b = None
-
-    print("<<<<<<<\n{a}\n=======\n{b}\n>>>>>>>".format(
-        a = a if a else "",
-        b = b if b else ""
+    print("<<<<<<<\n{a}{a_nl}=======\n{b}{b_nl}>>>>>>>".format(
+        a = a if a else "", a_nl = "\n" if a else "",
+        b = b if b else "", b_nl = "\n" if b else ""
     ))
 
 if __name__ == "__main__":
