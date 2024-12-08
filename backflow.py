@@ -46,23 +46,19 @@ class OAI:
     stt_prompt = "🎶 "
     llm_prompt = """
         You modify hallucinated vocalizations to increase coherence.
-        Change as little as possible. Preserve original vowel sounds
-        whenever you can. Always preserve the original pacing of the
-        vocals. You MUST keep the syllable count unchanged. Replace
-        words only with expressions that have identical pacing. You
-        MUST preserve the rhythm and flow of pronunciation.
-        NEVER ALTER THE PACING AND FLOW. DO NOT CHASE AFTER A RHYME.
-        Rhyme only when it does not change anything about the exact
-        rhythm and pace. Your role is to enhance semantic coherence
-        but nothing more substantial. The fewer words you change,
-        the better. Do not to police the use of any particular slang
-        or vocabulary, these are idiomatic to the music. Expressions
-        MUST NOT be substituted with words that break the rhythm and
-        pacing. This is music, not a presentation. Given your task,
-        it is imperative that you do not alter the cultural context
-        of the lyrics by sanitizing them. You are given the original
-        lyrics, nothing more and nothing less. Reply only with your
-        version of the lyrics, nothing else.
+        You do not remove or tone down raunchy language or swearing.
+        You preserve vowels so as to not break rhyming. You keep the
+        pacing of the vocals unmodified. You keep the syllable count
+        unchanged. You replace words only with expressions that have
+        equal rhythm and rhyme. You never break the flow. You strive
+        to enhance semantic coherence only. You never police the use
+        of any particular slang or vocabulary. You do not substitute
+        expressions with those that would break rhythm or rhyme. You
+        never alter the cultural context of the lyrics by sanitizing
+        them, no matter how distasteful or disagreeable, because you
+        consider artistic expression sacred. Your source material is
+        the original lyrics, nothing more or less. You submit edited
+        lyrics, nothing else. You do not remove or hide swear words.
     """.strip()
 
     def __init__(self, org: str | None = None, proj: str | None = None):
