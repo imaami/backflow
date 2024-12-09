@@ -6,6 +6,34 @@ import argparse
 import soundfile as sf
 import tempfile
 from openai import OpenAI
+from openai.types.audio import TranscriptionVerbose, TranscriptionSegment,TranscriptionWord
+
+def word_in_segment(w_start: float, w_end: float, s_start: float, s_end: float) -> bool:
+    return w_start >= s_start and w_end <= s_end
+
+def parse_transcription(xn: TranscriptionVerbose) -> None:
+    if len(xn.words) < 1:
+        return []
+
+    words: list[tuple[int, int, int, str]] = []
+    words.extend((w.start, w.end, -1, w.word) for w in xn.words)
+
+    n = len(xn.segments)
+    if n < 1:
+        return
+
+    i = 0
+    s = xn.segments[0]
+    for w in words:
+        while not word_in_segment(w[0], w[1], s.start, s.end):
+            i += 1
+            if i >= n:
+                break
+        if i >= n:
+            break
+        w[2] = i
+
+    return words
 
 def arg_or_var(arg: str | None, var: str) -> str | None:
     return arg.strip() if arg else (os.environ[var].strip() if var in os.environ else None)
@@ -60,14 +88,16 @@ class OAI:
 
     def transcribe(self, path: str, lang: str | None = None, prompt: str | None = None) -> str:
         with open(path, 'rb') as f:
-            return "\n".join(s.text.strip() for s in
-                self.client.audio.transcriptions.create(
-                    model = "whisper-1",
-                    response_format = "verbose_json",
-                    language = lang,
-                    prompt = prompt,
-                    file = f
-                ).segments)
+            x = self.client.audio.transcriptions.create(
+                model = "whisper-1",
+                response_format = "verbose_json",
+                language = lang,
+                prompt = prompt,
+                timestamp_granularities = ["word", "segment"],
+                file = f
+            )
+            #print(x)
+            return "\n".join(s.text.strip() for s in x.segments)
 
     def chat(self, txt: str, prompt: str, model: str) -> str:
         return self.client.chat.completions.create(
