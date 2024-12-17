@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Backflow</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #000;
+    font-family: sans-serif;
+    color: #fff;
+  }
+  #container {
+    position: relative;
+    width: 600px;
+    height: 1200px;
+  }
+  #barCanvas, #ovrCanvas, #txtCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: transparent;
+  }
+  #barCanvas {
+    z-index: 1;
+  }
+  #ovrCanvas {
+    z-index: 2;
+    pointer-events: none;
+  }
+  #txtCanvas {
+    z-index: 3;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+<div id="container">
+    <canvas id="barCanvas" width="50"></canvas>
+    <canvas id="ovrCanvas"></canvas>
+    <canvas id="txtCanvas"></canvas>
+</div>
+
+<script>
+(function(segments) {
+    var container = document.getElementById('container');
+    var height = container.clientHeight;
+
+    var barCanvas = document.getElementById('barCanvas');
+    var barWidth = barCanvas.width;
+    barCanvas.height = height;
+
+    var ovrCanvas = document.getElementById('ovrCanvas');
+    ovrCanvas.height = height;
+    ovrCanvas.width = barWidth;
+
+    var txtCanvas = document.getElementById('txtCanvas');
+    txtCanvas.height = height;
+    txtCanvas.width = container.clientWidth;
+
+    var barCtx = barCanvas.getContext('2d');
+    var ovrCtx = ovrCanvas.getContext('2d');
+    var txtCtx = txtCanvas.getContext('2d');
+
+    var allValues = segments.reduce(function(arr, seg) {
+        return arr.concat([seg.begin, seg.end]);
+    }, []);
+    var minVal = Math.min.apply(null, allValues);
+    var maxVal = Math.max.apply(null, allValues);
+    if (minVal === maxVal) {
+        maxVal = minVal + 1;
+    }
+
+    function mapValue(v) {
+        return (v - minVal) / (maxVal - minVal) * height;
+    }
+
+    // Palette to cycle through
+    const colors = [
+        '#60a5fa',
+        '#86efac',
+        '#a5b4fc'
+    ];
+
+    txtCtx.fillStyle = '#fff';
+    txtCtx.font = "14px sans-serif";
+    txtCtx.textBaseline = 'middle';
+
+    // Draw segments
+    segments.forEach(function(seg, idx) {
+        var y1, y2;
+
+        if (seg.begin > seg.end) {
+            y1 = seg.end;
+            y2 = seg.begin;
+        } else {
+            y1 = seg.begin;
+            y2 = seg.end;
+        }
+
+        var top_y = mapValue(y1);
+        var bot_y = mapValue(y2);
+        var mid_y;
+
+        if (y2 - y1 < 1e-12) {
+            // Zero-length segment
+            mid_y = top_y;
+            ovrCtx.strokeStyle = '#ff0000';
+            ovrCtx.lineWidth = 2;
+            ovrCtx.beginPath();
+            ovrCtx.moveTo(0, top_y);
+            ovrCtx.lineTo(barWidth, top_y);
+            ovrCtx.stroke();
+        } else {
+            // Normal segment
+            mid_y = (top_y + bot_y) / 2;
+            barCtx.fillStyle = colors[idx % colors.length];
+            barCtx.fillRect(0, top_y, barWidth, bot_y - top_y);
+        }
+
+        txtCtx.fillText(seg.text.replace(/\n/g, '\\n'), barWidth + 10, mid_y);
+    });
+})([
+    { begin: 0,   end: 50,  text: "mrlrbkrjrjrj rhrjejr hrh\nfoo bar ehehe\nabcdabcd dcba dcba" },
+    { begin: 50,  end: 50,  text: "something" },
+    { begin: 50,  end: 80,  text: "asdgafsgs" },
+    { begin: 100, end: 100, text: "fjfkfkrkrkr rjr jrkr\nshrj duhekr eywhejr" },
+    { begin: 120, end: 180, text: "yfyfyfyfyf" },
+    { begin: 200, end: 220, text: "Segment 6 text line 1\nSegment 6 text line 2" },
+    { begin: 220, end: 220, text: "Zero-length again" },
+    { begin: 230, end: 300, text: "A longer segment down here" }
+]);
+</script>
+
+</body>
+</html>

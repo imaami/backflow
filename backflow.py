@@ -8,32 +8,44 @@ import tempfile
 from openai import OpenAI
 from openai.types.audio import TranscriptionVerbose, TranscriptionSegment,TranscriptionWord
 
-def word_in_segment(w_start: float, w_end: float, s_start: float, s_end: float) -> bool:
-    return w_start >= s_start and w_end <= s_end
+def parse_transcription(xn: TranscriptionVerbose) -> tuple[list[tuple[int, int, list[int | None], str]], list[tuple[int, int, int, list[str], str]]]:
+    words: list[tuple[int, int, list[int | None], str]] = [
+        (w.start, w.end, [None], w.word.strip()) for w in xn.words if w.start <= w.end
+    ]
+    n_wrd = len(words)
+    if n_wrd < 1:
+        return [], []
 
-def parse_transcription(xn: TranscriptionVerbose) -> None:
-    if len(xn.words) < 1:
-        return []
+    segms: list[tuple[int, int, int, list[str], str]] = [
+        (s.start, s.end, i, [], s.text.strip()) for i, s in enumerate(xn.segments) if s.start <= s.end
+    ]
+    n_seg = len(segms)
+    if n_seg < 1:
+        return words, []
 
-    words: list[tuple[int, int, int, str]] = []
-    words.extend((w.start, w.end, -1, w.word) for w in xn.words)
+    wrd_id = 0
+    seg_id = 0
+    wrd = words[0]
+    seg = segms[0]
 
-    n = len(xn.segments)
-    if n < 1:
-        return
-
-    i = 0
-    s = xn.segments[0]
-    for w in words:
-        while not word_in_segment(w[0], w[1], s.start, s.end):
-            i += 1
-            if i >= n:
+    while True:
+        if wrd[0] > seg[1] or (wrd[0] == seg[1] and wrd[1] >= seg[1]):
+            seg_id += 1
+            if seg_id >= n_seg:
                 break
-        if i >= n:
-            break
-        w[2] = i
+            seg = segms[seg_id]
+            continue
 
-    return words
+        if wrd[0] >= seg[0] and wrd[1] <= seg[1]:
+            wrd[2][0] = seg[2]
+            seg[3].append(wrd[3])
+
+        wrd_id += 1
+        if wrd_id >= n_wrd:
+            break
+        wrd = words[wrd_id]
+
+    return words, segms
 
 def arg_or_var(arg: str | None, var: str) -> str | None:
     return arg.strip() if arg else (os.environ[var].strip() if var in os.environ else None)
@@ -88,7 +100,7 @@ class OAI:
 
     def transcribe(self, path: str, lang: str | None = None, prompt: str | None = None) -> str:
         with open(path, 'rb') as f:
-            x = self.client.audio.transcriptions.create(
+            raw = self.client.audio.transcriptions.with_raw_response.create(
                 model = "whisper-1",
                 response_format = "verbose_json",
                 language = lang,
@@ -96,7 +108,14 @@ class OAI:
                 timestamp_granularities = ["word", "segment"],
                 file = f
             )
+            x = raw.parse()
             #print(x)
+            #print(raw.text)
+            #words, segms = parse_transcription(x)
+            #for w in words:
+            #    print(w)
+            #for s in segms:
+            #    print(s)
             return "\n".join(s.text.strip() for s in x.segments)
 
     def chat(self, txt: str, prompt: str, model: str) -> str:
