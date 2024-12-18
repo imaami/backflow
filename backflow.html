@@ -14,7 +14,7 @@
   #container {
     position: relative;
     width: 600px;
-    height: 1200px;
+    height: 2000px;
   }
   #barCanvas, #ovrCanvas, #txtCanvas {
     position: absolute;
@@ -44,7 +44,10 @@
 </div>
 
 <script>
-(function(segments) {
+(function(data) {
+    var segments = data.segments;
+    //var words = data.words;
+
     var container = document.getElementById('container');
     var height = container.clientHeight;
 
@@ -65,7 +68,7 @@
     var txtCtx = txtCanvas.getContext('2d');
 
     var allValues = segments.reduce(function(arr, seg) {
-        return arr.concat([seg.begin, seg.end]);
+        return arr.concat([seg.start, seg.end]);
     }, []);
     var minVal = Math.min.apply(null, allValues);
     var maxVal = Math.max.apply(null, allValues);
@@ -92,11 +95,11 @@
     segments.forEach(function(seg, idx) {
         var y1, y2;
 
-        if (seg.begin > seg.end) {
+        if (seg.start > seg.end) {
             y1 = seg.end;
-            y2 = seg.begin;
+            y2 = seg.start;
         } else {
-            y1 = seg.begin;
+            y1 = seg.start;
             y2 = seg.end;
         }
 
@@ -119,19 +122,1301 @@
             barCtx.fillStyle = colors[idx % colors.length];
             barCtx.fillRect(0, top_y, barWidth, bot_y - top_y);
         }
-
-        txtCtx.fillText(seg.text.replace(/\n/g, '\\n'), barWidth + 10, mid_y);
+        var text = ("text" in seg) ? seg.text : seg.word;
+        txtCtx.fillText(text.replace(/\n/g, '\\n'), barWidth + 10, mid_y);
     });
-})([
-    { begin: 0,   end: 50,  text: "mrlrbkrjrjrj rhrjejr hrh\nfoo bar ehehe\nabcdabcd dcba dcba" },
-    { begin: 50,  end: 50,  text: "something" },
-    { begin: 50,  end: 80,  text: "asdgafsgs" },
-    { begin: 100, end: 100, text: "fjfkfkrkrkr rjr jrkr\nshrj duhekr eywhejr" },
-    { begin: 120, end: 180, text: "yfyfyfyfyf" },
-    { begin: 200, end: 220, text: "Segment 6 text line 1\nSegment 6 text line 2" },
-    { begin: 220, end: 220, text: "Zero-length again" },
-    { begin: 230, end: 300, text: "A longer segment down here" }
-]);
+})({
+  "task": "transcribe",
+  "language": "english",
+  "duration": 111.77999877929688,
+  "text": "Dum du um, dum du um, dum AHHHHHHHHHHHHHHHHHHH Dud Dum duuuuuuuuuuuuuuuuuuum AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH  Uh uh uh uh uh uhh uh uh Hua Hua   Achoo, Achoo Achoo Huh? Huuuuuuuh. Huuuh Gah DALALALALLALLALLALLALLAAAA HRRRRRRRRRRR TOTT UUUURRRRRRRRRRRRR UH   UH UHUHUHUHUHUHtoo HOOOOOOOOooooooooooo Mutant  Cleb CLEBS ABASTURE Overwatch  DO  Ne Fat UR URAM crucker UURRRRRRRRRRRR Th classroom for   is u later turn good knew  the i  the ind ",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 0.0,
+      "end": 2.9200000762939453,
+      "text": " Dum du um, dum du um, dum",
+      "tokens": [
+        50364,
+        29572,
+        1581,
+        1105,
+        11,
+        16784,
+        1581,
+        1105,
+        11,
+        16784,
+        50508
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -2.209653615951538,
+      "compression_ratio": 2.4642856121063232,
+      "no_speech_prob": 0.5257043242454529
+    },
+    {
+      "id": 1,
+      "seek": 0,
+      "start": 4.71999979019165,
+      "end": 5.380000114440918,
+      "text": " AHHHHHHHHHHHHHHHHHHH",
+      "tokens": [
+        50514,
+        316,
+        18454,
+        18454,
+        18454,
+        18454,
+        35446,
+        50626
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -2.209653615951538,
+      "compression_ratio": 2.4642856121063232,
+      "no_speech_prob": 0.5257043242454529
+    },
+    {
+      "id": 2,
+      "seek": 0,
+      "start": 5.380000114440918,
+      "end": 6.5,
+      "text": " Dud Dum duuuuuuuuuuuuuuuuuuum",
+      "tokens": [
+        50629,
+        42622,
+        29572,
+        1581,
+        43779,
+        43779,
+        43779,
+        43779,
+        12823,
+        50689
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -2.209653615951538,
+      "compression_ratio": 2.4642856121063232,
+      "no_speech_prob": 0.5257043242454529
+    },
+    {
+      "id": 3,
+      "seek": 0,
+      "start": 11.600000381469727,
+      "end": 12.260000228881836,
+      "text": " AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH",
+      "tokens": [
+        50691,
+        316,
+        18454,
+        18454,
+        18454,
+        18454,
+        18454,
+        18454,
+        18454,
+        35446,
+        50823
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -2.209653615951538,
+      "compression_ratio": 2.4642856121063232,
+      "no_speech_prob": 0.5257043242454529
+    },
+    {
+      "id": 4,
+      "seek": 0,
+      "start": 12.260000228881836,
+      "end": 12.260000228881836,
+      "text": "",
+      "tokens": [],
+      "temperature": 1.0,
+      "avg_logprob": -2.209653615951538,
+      "compression_ratio": 2.4642856121063232,
+      "no_speech_prob": 0.5257043242454529
+    },
+    {
+      "id": 5,
+      "seek": 0,
+      "start": 12.260000228881836,
+      "end": 16.479999542236328,
+      "text": " Uh uh uh uh uh uhh uh uh",
+      "tokens": [
+        50859,
+        4019,
+        2232,
+        2232,
+        2232,
+        2232,
+        29256,
+        2232,
+        220,
+        3232,
+        50998
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -2.209653615951538,
+      "compression_ratio": 2.4642856121063232,
+      "no_speech_prob": 0.5257043242454529
+    },
+    {
+      "id": 6,
+      "seek": 0,
+      "start": 17.799999237060547,
+      "end": 19.1200008392334,
+      "text": " Hua Hua",
+      "tokens": [
+        50998,
+        11874,
+        64,
+        19094,
+        51024
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -2.209653615951538,
+      "compression_ratio": 2.4642856121063232,
+      "no_speech_prob": 0.5257043242454529
+    },
+    {
+      "id": 7,
+      "seek": 0,
+      "start": 19.1200008392334,
+      "end": 19.1200008392334,
+      "text": "",
+      "tokens": [],
+      "temperature": 1.0,
+      "avg_logprob": -2.209653615951538,
+      "compression_ratio": 2.4642856121063232,
+      "no_speech_prob": 0.5257043242454529
+    },
+    {
+      "id": 8,
+      "seek": 0,
+      "start": 19.1200008392334,
+      "end": 19.1200008392334,
+      "text": "",
+      "tokens": [],
+      "temperature": 1.0,
+      "avg_logprob": -2.209653615951538,
+      "compression_ratio": 2.4642856121063232,
+      "no_speech_prob": 0.5257043242454529
+    },
+    {
+      "id": 9,
+      "seek": 0,
+      "start": 19.1200008392334,
+      "end": 20.059999465942383,
+      "text": " Achoo, Achoo",
+      "tokens": [
+        51305,
+        15847,
+        1986,
+        11,
+        5097,
+        19069,
+        51360
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -2.209653615951538,
+      "compression_ratio": 2.4642856121063232,
+      "no_speech_prob": 0.5257043242454529
+    },
+    {
+      "id": 10,
+      "seek": 0,
+      "start": 20.979999542236328,
+      "end": 21.639999389648438,
+      "text": " Achoo",
+      "tokens": [
+        51405,
+        15847,
+        1986,
+        51453
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -2.209653615951538,
+      "compression_ratio": 2.4642856121063232,
+      "no_speech_prob": 0.5257043242454529
+    },
+    {
+      "id": 11,
+      "seek": 0,
+      "start": 24.940000534057617,
+      "end": 25.600000381469727,
+      "text": " Huh?",
+      "tokens": [
+        51607,
+        11874,
+        71,
+        30,
+        51653
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -2.209653615951538,
+      "compression_ratio": 2.4642856121063232,
+      "no_speech_prob": 0.5257043242454529
+    },
+    {
+      "id": 12,
+      "seek": 0,
+      "start": 28.15999984741211,
+      "end": 28.81999969482422,
+      "text": " Huuuuuuuh.",
+      "tokens": [
+        51728,
+        389,
+        43779,
+        9750,
+        3232,
+        13,
+        51783
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -2.209653615951538,
+      "compression_ratio": 2.4642856121063232,
+      "no_speech_prob": 0.5257043242454529
+    },
+    {
+      "id": 13,
+      "seek": 0,
+      "start": 28.84000015258789,
+      "end": 29.18000030517578,
+      "text": " Huuuh",
+      "tokens": [
+        51815,
+        11874,
+        84,
+        3232,
+        51840
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -2.209653615951538,
+      "compression_ratio": 2.4642856121063232,
+      "no_speech_prob": 0.5257043242454529
+    },
+    {
+      "id": 14,
+      "seek": 3000,
+      "start": 30.719999313354492,
+      "end": 30.84000015258789,
+      "text": " Gah",
+      "tokens": [
+        50400,
+        460,
+        545,
+        50447
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -3.2350821495056152,
+      "compression_ratio": 1.725274682044983,
+      "no_speech_prob": 0.013867201283574104
+    },
+    {
+      "id": 15,
+      "seek": 3000,
+      "start": 34.18000030517578,
+      "end": 35.58000183105469,
+      "text": " DALALALALLALLALLALLALLAAAA",
+      "tokens": [
+        50515,
+        413,
+        3427,
+        3427,
+        3427,
+        15921,
+        15921,
+        15921,
+        15921,
+        15921,
+        13336,
+        50648
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -3.2350821495056152,
+      "compression_ratio": 1.725274682044983,
+      "no_speech_prob": 0.013867201283574104
+    },
+    {
+      "id": 16,
+      "seek": 3000,
+      "start": 35.58000183105469,
+      "end": 36.97999954223633,
+      "text": " HRRRRRRRRRRR",
+      "tokens": [
+        50649,
+        19460,
+        35714,
+        35714,
+        35714,
+        35714,
+        35714,
+        50697
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -3.2350821495056152,
+      "compression_ratio": 1.725274682044983,
+      "no_speech_prob": 0.013867201283574104
+    },
+    {
+      "id": 17,
+      "seek": 3000,
+      "start": 39.02000045776367,
+      "end": 40.41999816894531,
+      "text": " TOTT",
+      "tokens": [
+        50714,
+        8232,
+        28178,
+        50768
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -3.2350821495056152,
+      "compression_ratio": 1.725274682044983,
+      "no_speech_prob": 0.013867201283574104
+    },
+    {
+      "id": 18,
+      "seek": 3000,
+      "start": 40.900001525878906,
+      "end": 42.29999923706055,
+      "text": " UUUURRRRRRRRRRRRR",
+      "tokens": [
+        50791,
+        624,
+        23687,
+        7932,
+        35714,
+        35714,
+        35714,
+        35714,
+        35714,
+        35714,
+        50846
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -3.2350821495056152,
+      "compression_ratio": 1.725274682044983,
+      "no_speech_prob": 0.013867201283574104
+    },
+    {
+      "id": 19,
+      "seek": 3000,
+      "start": 42.29999923706055,
+      "end": 42.31999969482422,
+      "text": " UH",
+      "tokens": [
+        50873,
+        50030,
+        50902
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -3.2350821495056152,
+      "compression_ratio": 1.725274682044983,
+      "no_speech_prob": 0.013867201283574104
+    },
+    {
+      "id": 20,
+      "seek": 3000,
+      "start": 42.31999969482422,
+      "end": 42.31999969482422,
+      "text": "",
+      "tokens": [],
+      "temperature": 1.0,
+      "avg_logprob": -3.2350821495056152,
+      "compression_ratio": 1.725274682044983,
+      "no_speech_prob": 0.013867201283574104
+    },
+    {
+      "id": 21,
+      "seek": 3000,
+      "start": 42.31999969482422,
+      "end": 42.31999969482422,
+      "text": "",
+      "tokens": [],
+      "temperature": 1.0,
+      "avg_logprob": -3.2350821495056152,
+      "compression_ratio": 1.725274682044983,
+      "no_speech_prob": 0.013867201283574104
+    },
+    {
+      "id": 22,
+      "seek": 3000,
+      "start": 43.08000183105469,
+      "end": 43.099998474121094,
+      "text": " UH",
+      "tokens": [
+        51018,
+        220,
+        52,
+        39,
+        51058
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -3.2350821495056152,
+      "compression_ratio": 1.725274682044983,
+      "no_speech_prob": 0.013867201283574104
+    },
+    {
+      "id": 23,
+      "seek": 3000,
+      "start": 44.13999938964844,
+      "end": 44.91999816894531,
+      "text": " UHUHUHUHUHUHtoo",
+      "tokens": [
+        51058,
+        624,
+        39,
+        52,
+        39,
+        52,
+        39,
+        52,
+        39,
+        52,
+        39,
+        52,
+        39,
+        32599,
+        51110
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -3.2350821495056152,
+      "compression_ratio": 1.725274682044983,
+      "no_speech_prob": 0.013867201283574104
+    },
+    {
+      "id": 24,
+      "seek": 3000,
+      "start": 45.540000915527344,
+      "end": 45.63999938964844,
+      "text": " HOOOOOOOOooooooooooo",
+      "tokens": [
+        51113,
+        389,
+        40466,
+        12506,
+        12506,
+        18728,
+        51163
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -3.2350821495056152,
+      "compression_ratio": 1.725274682044983,
+      "no_speech_prob": 0.013867201283574104
+    },
+    {
+      "id": 25,
+      "seek": 3000,
+      "start": 46.439998626708984,
+      "end": 47.20000076293945,
+      "text": " Mutant",
+      "tokens": [
+        51186,
+        18517,
+        394,
+        51250
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -3.2350821495056152,
+      "compression_ratio": 1.725274682044983,
+      "no_speech_prob": 0.013867201283574104
+    },
+    {
+      "id": 26,
+      "seek": 3000,
+      "start": 47.20000076293945,
+      "end": 47.20000076293945,
+      "text": "",
+      "tokens": [],
+      "temperature": 1.0,
+      "avg_logprob": -3.2350821495056152,
+      "compression_ratio": 1.725274682044983,
+      "no_speech_prob": 0.013867201283574104
+    },
+    {
+      "id": 27,
+      "seek": 3000,
+      "start": 54.58000183105469,
+      "end": 54.97999954223633,
+      "text": " Cleb",
+      "tokens": [
+        51594,
+        383,
+        28512,
+        51613
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -3.2350821495056152,
+      "compression_ratio": 1.725274682044983,
+      "no_speech_prob": 0.013867201283574104
+    },
+    {
+      "id": 28,
+      "seek": 3000,
+      "start": 58.099998474121094,
+      "end": 59.5,
+      "text": " CLEBS",
+      "tokens": [
+        51626,
+        12855,
+        36,
+        8176,
+        51651
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -3.2350821495056152,
+      "compression_ratio": 1.725274682044983,
+      "no_speech_prob": 0.013867201283574104
+    },
+    {
+      "id": 29,
+      "seek": 3000,
+      "start": 59.5,
+      "end": 59.97999954223633,
+      "text": " ABASTURE",
+      "tokens": [
+        51661,
+        13838,
+        20398,
+        35916,
+        51756
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -3.2350821495056152,
+      "compression_ratio": 1.725274682044983,
+      "no_speech_prob": 0.013867201283574104
+    },
+    {
+      "id": 30,
+      "seek": 5998,
+      "start": 61.959999084472656,
+      "end": 63.36000061035156,
+      "text": " Overwatch",
+      "tokens": [
+        50392,
+        35141,
+        50442
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -3.986741304397583,
+      "compression_ratio": 1.1139240264892578,
+      "no_speech_prob": 0.16832958161830902
+    },
+    {
+      "id": 31,
+      "seek": 5998,
+      "start": 63.36000061035156,
+      "end": 63.36000061035156,
+      "text": "",
+      "tokens": [],
+      "temperature": 1.0,
+      "avg_logprob": -3.986741304397583,
+      "compression_ratio": 1.1139240264892578,
+      "no_speech_prob": 0.16832958161830902
+    },
+    {
+      "id": 32,
+      "seek": 5998,
+      "start": 63.36000061035156,
+      "end": 64.16000366210938,
+      "text": " DO",
+      "tokens": [
+        50550,
+        10699,
+        50558
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -3.986741304397583,
+      "compression_ratio": 1.1139240264892578,
+      "no_speech_prob": 0.16832958161830902
+    },
+    {
+      "id": 33,
+      "seek": 5998,
+      "start": 64.16000366210938,
+      "end": 64.16000366210938,
+      "text": "",
+      "tokens": [],
+      "temperature": 1.0,
+      "avg_logprob": -3.986741304397583,
+      "compression_ratio": 1.1139240264892578,
+      "no_speech_prob": 0.16832958161830902
+    },
+    {
+      "id": 34,
+      "seek": 5998,
+      "start": 64.16000366210938,
+      "end": 64.87999725341797,
+      "text": " Ne",
+      "tokens": [
+        50611,
+        1734,
+        50622
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -3.986741304397583,
+      "compression_ratio": 1.1139240264892578,
+      "no_speech_prob": 0.16832958161830902
+    },
+    {
+      "id": 35,
+      "seek": 5998,
+      "start": 64.87999725341797,
+      "end": 65.66000366210938,
+      "text": " Fat",
+      "tokens": [
+        50622,
+        16948,
+        50642
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -3.986741304397583,
+      "compression_ratio": 1.1139240264892578,
+      "no_speech_prob": 0.16832958161830902
+    },
+    {
+      "id": 36,
+      "seek": 5998,
+      "start": 65.83999633789062,
+      "end": 66.0999984741211,
+      "text": " UR",
+      "tokens": [
+        50642,
+        624,
+        49,
+        50670
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -3.986741304397583,
+      "compression_ratio": 1.1139240264892578,
+      "no_speech_prob": 0.16832958161830902
+    },
+    {
+      "id": 37,
+      "seek": 5998,
+      "start": 67.23999786376953,
+      "end": 67.36000061035156,
+      "text": " URAM",
+      "tokens": [
+        50704,
+        624,
+        49,
+        2865,
+        50727
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -3.986741304397583,
+      "compression_ratio": 1.1139240264892578,
+      "no_speech_prob": 0.16832958161830902
+    },
+    {
+      "id": 38,
+      "seek": 5998,
+      "start": 68.12000274658203,
+      "end": 69.5199966430664,
+      "text": " crucker",
+      "tokens": [
+        50730,
+        5140,
+        9178,
+        50766
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -3.986741304397583,
+      "compression_ratio": 1.1139240264892578,
+      "no_speech_prob": 0.16832958161830902
+    },
+    {
+      "id": 39,
+      "seek": 5998,
+      "start": 71.91999816894531,
+      "end": 73.31999969482422,
+      "text": " UURRRRRRRRRRRR",
+      "tokens": [
+        50766,
+        624,
+        7932,
+        35714,
+        35714,
+        35714,
+        35714,
+        35714,
+        49,
+        50802
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -3.986741304397583,
+      "compression_ratio": 1.1139240264892578,
+      "no_speech_prob": 0.16832958161830902
+    },
+    {
+      "id": 40,
+      "seek": 5998,
+      "start": 73.31999969482422,
+      "end": 76.0,
+      "text": " Th classroom",
+      "tokens": [
+        50810,
+        334,
+        7419,
+        50866
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -3.986741304397583,
+      "compression_ratio": 1.1139240264892578,
+      "no_speech_prob": 0.16832958161830902
+    },
+    {
+      "id": 41,
+      "seek": 5998,
+      "start": 77.72000122070312,
+      "end": 79.12000274658203,
+      "text": " for",
+      "tokens": [
+        50869,
+        337,
+        50894
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -3.986741304397583,
+      "compression_ratio": 1.1139240264892578,
+      "no_speech_prob": 0.16832958161830902
+    },
+    {
+      "id": 42,
+      "seek": 5998,
+      "start": 79.12000274658203,
+      "end": 79.12000274658203,
+      "text": "",
+      "tokens": [],
+      "temperature": 1.0,
+      "avg_logprob": -3.986741304397583,
+      "compression_ratio": 1.1139240264892578,
+      "no_speech_prob": 0.16832958161830902
+    },
+    {
+      "id": 43,
+      "seek": 5998,
+      "start": 79.12000274658203,
+      "end": 79.12000274658203,
+      "text": "",
+      "tokens": [],
+      "temperature": 1.0,
+      "avg_logprob": -3.986741304397583,
+      "compression_ratio": 1.1139240264892578,
+      "no_speech_prob": 0.16832958161830902
+    },
+    {
+      "id": 44,
+      "seek": 5998,
+      "start": 79.12000274658203,
+      "end": 79.5999984741211,
+      "text": " is",
+      "tokens": [
+        51260,
+        307,
+        51300
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -3.986741304397583,
+      "compression_ratio": 1.1139240264892578,
+      "no_speech_prob": 0.16832958161830902
+    },
+    {
+      "id": 45,
+      "seek": 5998,
+      "start": 79.5999984741211,
+      "end": 79.76000213623047,
+      "text": " u",
+      "tokens": [
+        51300,
+        344,
+        51324
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -3.986741304397583,
+      "compression_ratio": 1.1139240264892578,
+      "no_speech_prob": 0.16832958161830902
+    },
+    {
+      "id": 46,
+      "seek": 5998,
+      "start": 83.54000091552734,
+      "end": 84.94000244140625,
+      "text": " later",
+      "tokens": [
+        51324,
+        1780,
+        51616
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -3.986741304397583,
+      "compression_ratio": 1.1139240264892578,
+      "no_speech_prob": 0.16832958161830902
+    },
+    {
+      "id": 47,
+      "seek": 8494,
+      "start": 84.94000244140625,
+      "end": 87.5999984741211,
+      "text": " turn",
+      "tokens": [
+        50383,
+        1261,
+        50495
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -4.651276588439941,
+      "compression_ratio": 0.930232584476471,
+      "no_speech_prob": 0.01546341273933649
+    },
+    {
+      "id": 48,
+      "seek": 8494,
+      "start": 96.0199966430664,
+      "end": 97.41999816894531,
+      "text": " good",
+      "tokens": [
+        50762,
+        665,
+        50910
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -4.651276588439941,
+      "compression_ratio": 0.930232584476471,
+      "no_speech_prob": 0.01546341273933649
+    },
+    {
+      "id": 49,
+      "seek": 8494,
+      "start": 97.87999725341797,
+      "end": 99.27999877929688,
+      "text": " knew",
+      "tokens": [
+        50954,
+        2586,
+        51056
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -4.651276588439941,
+      "compression_ratio": 0.930232584476471,
+      "no_speech_prob": 0.01546341273933649
+    },
+    {
+      "id": 50,
+      "seek": 8494,
+      "start": 99.27999877929688,
+      "end": 99.27999877929688,
+      "text": "",
+      "tokens": [],
+      "temperature": 1.0,
+      "avg_logprob": -4.651276588439941,
+      "compression_ratio": 0.930232584476471,
+      "no_speech_prob": 0.01546341273933649
+    },
+    {
+      "id": 51,
+      "seek": 8494,
+      "start": 100.0,
+      "end": 100.13999938964844,
+      "text": " the",
+      "tokens": [
+        51117,
+        264,
+        51232
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -4.651276588439941,
+      "compression_ratio": 0.930232584476471,
+      "no_speech_prob": 0.01546341273933649
+    },
+    {
+      "id": 52,
+      "seek": 8494,
+      "start": 102.5,
+      "end": 102.91999816894531,
+      "text": " i",
+      "tokens": [
+        51232,
+        741,
+        51263
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -4.651276588439941,
+      "compression_ratio": 0.930232584476471,
+      "no_speech_prob": 0.01546341273933649
+    },
+    {
+      "id": 53,
+      "seek": 8494,
+      "start": 103.9000015258789,
+      "end": 103.9000015258789,
+      "text": "",
+      "tokens": [],
+      "temperature": 1.0,
+      "avg_logprob": -4.651276588439941,
+      "compression_ratio": 0.930232584476471,
+      "no_speech_prob": 0.01546341273933649
+    },
+    {
+      "id": 54,
+      "seek": 8494,
+      "start": 103.9000015258789,
+      "end": 104.22000122070312,
+      "text": " the",
+      "tokens": [
+        51313,
+        264,
+        51573
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -4.651276588439941,
+      "compression_ratio": 0.930232584476471,
+      "no_speech_prob": 0.01546341273933649
+    },
+    {
+      "id": 55,
+      "seek": 8494,
+      "start": 109.12000274658203,
+      "end": 109.5199966430664,
+      "text": " ind",
+      "tokens": [
+        51573,
+        1016,
+        51589
+      ],
+      "temperature": 1.0,
+      "avg_logprob": -4.651276588439941,
+      "compression_ratio": 0.930232584476471,
+      "no_speech_prob": 0.01546341273933649
+    },
+    {
+      "id": 56,
+      "seek": 8494,
+      "start": 109.5199966430664,
+      "end": 109.5199966430664,
+      "text": "",
+      "tokens": [],
+      "temperature": 1.0,
+      "avg_logprob": -4.651276588439941,
+      "compression_ratio": 0.930232584476471,
+      "no_speech_prob": 0.01546341273933649
+    }
+  ],
+  "words": [
+    {
+      "word": "Dum",
+      "start": 0.0,
+      "end": 0.6399999856948853
+    },
+    {
+      "word": "du",
+      "start": 0.6399999856948853,
+      "end": 0.800000011920929
+    },
+    {
+      "word": "um",
+      "start": 0.800000011920929,
+      "end": 1.159999966621399
+    },
+    {
+      "word": "dum",
+      "start": 1.4600000381469727,
+      "end": 1.7200000286102295
+    },
+    {
+      "word": "du",
+      "start": 1.7200000286102295,
+      "end": 2.0
+    },
+    {
+      "word": "um",
+      "start": 2.0,
+      "end": 2.5199999809265137
+    },
+    {
+      "word": "dum",
+      "start": 2.5999999046325684,
+      "end": 2.9200000762939453
+    },
+    {
+      "word": "AHHHHHHHHHHHHHHHHHHH",
+      "start": 4.71999979019165,
+      "end": 5.380000114440918
+    },
+    {
+      "word": "Dud",
+      "start": 5.380000114440918,
+      "end": 5.599999904632568
+    },
+    {
+      "word": "Dum",
+      "start": 5.599999904632568,
+      "end": 5.820000171661377
+    },
+    {
+      "word": "duuuuuuuuuuuuuuuuuuum",
+      "start": 5.820000171661377,
+      "end": 6.5
+    },
+    {
+      "word": "AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH",
+      "start": 11.600000381469727,
+      "end": 12.260000228881836
+    },
+    {
+      "word": "Uh",
+      "start": 12.260000228881836,
+      "end": 12.800000190734863
+    },
+    {
+      "word": "uh",
+      "start": 12.800000190734863,
+      "end": 12.920000076293945
+    },
+    {
+      "word": "uh",
+      "start": 12.920000076293945,
+      "end": 13.180000305175781
+    },
+    {
+      "word": "uh",
+      "start": 13.180000305175781,
+      "end": 13.319999694824219
+    },
+    {
+      "word": "uh",
+      "start": 13.319999694824219,
+      "end": 13.640000343322754
+    },
+    {
+      "word": "uhh",
+      "start": 13.640000343322754,
+      "end": 14.720000267028809
+    },
+    {
+      "word": "uh",
+      "start": 14.720000267028809,
+      "end": 16.479999542236328
+    },
+    {
+      "word": "uh",
+      "start": 16.479999542236328,
+      "end": 16.479999542236328
+    },
+    {
+      "word": "Hua",
+      "start": 17.799999237060547,
+      "end": 18.459999084472656
+    },
+    {
+      "word": "Hua",
+      "start": 18.459999084472656,
+      "end": 19.1200008392334
+    },
+    {
+      "word": "Achoo",
+      "start": 19.1200008392334,
+      "end": 19.239999771118164
+    },
+    {
+      "word": "Achoo",
+      "start": 19.34000015258789,
+      "end": 20.059999465942383
+    },
+    {
+      "word": "Achoo",
+      "start": 20.979999542236328,
+      "end": 21.639999389648438
+    },
+    {
+      "word": "Huh",
+      "start": 24.940000534057617,
+      "end": 25.600000381469727
+    },
+    {
+      "word": "Huuuuuuuh",
+      "start": 28.15999984741211,
+      "end": 28.81999969482422
+    },
+    {
+      "word": "Huuuh",
+      "start": 28.84000015258789,
+      "end": 29.18000030517578
+    },
+    {
+      "word": "Gah",
+      "start": 30.139999389648438,
+      "end": 30.84000015258789
+    },
+    {
+      "word": "DALALALALLALLALLALLALLAAAA",
+      "start": 34.18000030517578,
+      "end": 35.58000183105469
+    },
+    {
+      "word": "HRRRRRRRRRRR",
+      "start": 35.58000183105469,
+      "end": 36.97999954223633
+    },
+    {
+      "word": "TOTT",
+      "start": 39.02000045776367,
+      "end": 40.41999816894531
+    },
+    {
+      "word": "UUUURRRRRRRRRRRRR",
+      "start": 40.900001525878906,
+      "end": 42.29999923706055
+    },
+    {
+      "word": "UH",
+      "start": 42.29999923706055,
+      "end": 42.31999969482422
+    },
+    {
+      "word": "UH",
+      "start": 42.400001525878906,
+      "end": 43.099998474121094
+    },
+    {
+      "word": "UHUHUHUHUHUHtoo",
+      "start": 44.13999938964844,
+      "end": 44.91999816894531
+    },
+    {
+      "word": "HOOOOOOOOooooooooooo",
+      "start": 45.540000915527344,
+      "end": 45.63999938964844
+    },
+    {
+      "word": "Mutant",
+      "start": 46.439998626708984,
+      "end": 47.20000076293945
+    },
+    {
+      "word": "Cleb",
+      "start": 54.58000183105469,
+      "end": 55.279998779296875
+    },
+    {
+      "word": "CLEBS",
+      "start": 58.099998474121094,
+      "end": 59.5
+    },
+    {
+      "word": "ABASTURE",
+      "start": 59.5,
+      "end": 59.97999954223633
+    },
+    {
+      "word": "Overwatch",
+      "start": 61.959999084472656,
+      "end": 63.36000061035156
+    },
+    {
+      "word": "DO",
+      "start": 63.36000061035156,
+      "end": 64.16000366210938
+    },
+    {
+      "word": "Ne",
+      "start": 64.16000366210938,
+      "end": 64.87999725341797
+    },
+    {
+      "word": "Fat",
+      "start": 64.87999725341797,
+      "end": 65.66000366210938
+    },
+    {
+      "word": "UR",
+      "start": 65.83999633789062,
+      "end": 66.54000091552734
+    },
+    {
+      "word": "URAM",
+      "start": 67.23999786376953,
+      "end": 67.36000061035156
+    },
+    {
+      "word": "crucker",
+      "start": 68.12000274658203,
+      "end": 69.5199966430664
+    },
+    {
+      "word": "UURRRRRRRRRRRR",
+      "start": 71.91999816894531,
+      "end": 73.31999969482422
+    },
+    {
+      "word": "Th",
+      "start": 73.31999969482422,
+      "end": 74.55999755859375
+    },
+    {
+      "word": "classroom",
+      "start": 74.55999755859375,
+      "end": 76.0
+    },
+    {
+      "word": "for",
+      "start": 77.72000122070312,
+      "end": 79.12000274658203
+    },
+    {
+      "word": "is",
+      "start": 79.12000274658203,
+      "end": 79.5999984741211
+    },
+    {
+      "word": "u",
+      "start": 79.5999984741211,
+      "end": 79.76000213623047
+    },
+    {
+      "word": "later",
+      "start": 83.54000091552734,
+      "end": 84.94000244140625
+    },
+    {
+      "word": "turn",
+      "start": 84.94000244140625,
+      "end": 87.5999984741211
+    },
+    {
+      "word": "good",
+      "start": 96.0199966430664,
+      "end": 97.41999816894531
+    },
+    {
+      "word": "knew",
+      "start": 97.87999725341797,
+      "end": 99.27999877929688
+    },
+    {
+      "word": "the",
+      "start": 99.44000244140625,
+      "end": 100.13999938964844
+    },
+    {
+      "word": "i",
+      "start": 102.5,
+      "end": 103.19999694824219
+    },
+    {
+      "word": "the",
+      "start": 103.9000015258789,
+      "end": 104.22000122070312
+    },
+    {
+      "word": "ind",
+      "start": 108.81999969482422,
+      "end": 109.5199966430664
+    }
+  ]
+}
+);
 </script>
 
 </body>
