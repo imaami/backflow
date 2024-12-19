@@ -98,16 +98,21 @@ class OAI:
     def __del__(self):
         self.client.close()
 
-    def transcribe(self, path: str, lang: str | None = None, prompt: str | None = None) -> str:
+    def transcribe(self, path: str,
+                   lang: str | None = None,
+                   prompt: str | None = None,
+                   temp: float | None = None) -> str:
         with open(path, 'rb') as f:
+            kwargs = { "file": f }
+            if lang is not None:
+                kwargs["language"] = lang
+            if prompt is not None:
+                kwargs["prompt"] = prompt
+            if temp is not None:
+                kwargs["temperature"] = temp
             raw = self.client.audio.transcriptions.with_raw_response.create(
-                model = "whisper-1",
-                response_format = "verbose_json",
-                language = lang,
-                prompt = prompt,
-                timestamp_granularities = ["word", "segment"],
-                file = f
-            )
+                model = "whisper-1", response_format = "verbose_json",
+                timestamp_granularities = ["word", "segment"], **kwargs)
             x = raw.parse()
             #print(x)
             #print(raw.text)
@@ -174,6 +179,7 @@ class Backflow:
         self.model = args.model or "o1-mini"
         self.lang = args.lang
         self.nrev = args.nrev
+        self.wt = args.wt
         style = args.style.strip() if args.style else ""
         topic = args.topic.strip() if args.topic else ""
         self.style = "\nThe style or genre of the original lyrics is: " + style + "." if len(style) else ""
@@ -186,7 +192,12 @@ class Backflow:
     def get_transcript(self, force: bool = False) -> str:
         if not self.transcript or force:
             try:
-                self.transcript = self.oai.transcribe(self.audio.get_path(), self.lang, self.stt_prompt)
+                self.transcript = self.oai.transcribe(
+                    path = self.audio.get_path(),
+                    lang = self.lang,
+                    prompt = self.stt_prompt,
+                    temp = self.wt
+                )
             except Exception as e:
                 print(f"Failed to transcribe {self.path}: {e}")
                 self.transcript = None
@@ -226,6 +237,8 @@ Environment variables:
             help="        OpenAI project ID")
         parser.add_argument('-l', type=str, dest="lang", default=None, metavar="<code>",
             help="        ISO 639-1 language code")
+        parser.add_argument('-w', type=float, dest="wt", default=None, metavar="<float>",
+            help="        Whisper temperature")
         parser.add_argument('-m', type=str, dest="model", default=None, metavar="<model>",
             help="        OpenAI LLM model name")
         parser.add_argument('-n', type=int, dest="nrev", default=1, metavar="<n>",
