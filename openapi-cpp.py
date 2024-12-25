@@ -13,14 +13,17 @@ BASIC_TYPE_MAP = {
     ('boolean', None): 'bool'
 }
 
-class CRTPGenerator:
+class CRTPGeneratorRefsAsMembers:
     def __init__(self, doc):
+        """
+        doc: Parsed OpenAPI or JSON Schema that has a 'components'/'schemas' block.
+        """
         self.doc = doc
         self.components = doc.get('components', {})
         self.schemas = self.components.get('schemas', {})
         # Keep track of which schemas we've generated
         self.generated = set()
-        # We'll store lines of code in lists
+        # We'll store lines of code in these lists
         self.forward_declarations = []
         self.base_definitions = []
         self.derived_definitions = []
@@ -33,104 +36,94 @@ class CRTPGenerator:
 
     def get_cpp_type(self, prop_schema):
         """
-        Return a C++ type or a CRTP base. If $ref, we won't store a direct type for a property,
-        because we plan to do inheritance instead. For arrays/scalars, we map them in a naive way.
+        Return a C++ type for a property that is not itself a schema-level reference.
+
+        - If 'type=array', produce std::vector<...>.
+        - If 'type=object' with no $ref, treat it as UNKNOWN_TYPE (or generate an inline struct, if you prefer).
+        - If there's an enum, produce std::string (for now).
+        - Otherwise, use BASIC_TYPE_MAP or fallback to UNKNOWN_TYPE.
         """
         if not isinstance(prop_schema, dict):
-            # Not a recognized dictionary schema; fallback to an error type
-            return "UNKNOWN_TYPE"
+            return "UNKNOWN_TYPE"  # not a recognized dictionary
 
         if '$ref' in prop_schema:
-            # We'll handle references via inheritance in the parent schema,
-            # but let's return the referenced name if needed.
+            # We'll handle references by returning the final derived struct's name
             return self.ref_to_name(prop_schema['$ref'])
 
         prop_type = prop_schema.get('type')
         prop_format = prop_schema.get('format')
+
         if prop_type == 'array':
-            # We do a naive single-level approach
             items = prop_schema.get('items', {})
             elem_type = self.get_cpp_type(items)
             return f"std::vector<{elem_type}>"
 
         if prop_type == 'object':
-            # Possibly an inline object (no $ref).
-            # The fallback is to say "We don't handle it" → UNKNOWN_TYPE
-            # Or keep it as "T" if you want a placeholder. We'll treat it as unknown for now:
+            # For inline objects, we either generate a new inline struct or skip.
+            # We'll do a fallback to UNKNOWN_TYPE for simplicity.
             return "UNKNOWN_TYPE"
 
-        # If there's an enum, do something naive
         if 'enum' in prop_schema:
-            return "std::string  // or generate an enum"
+            # Could generate an enum, but here we store as string
+            return "std::string  // or generated enum"
 
-        # Otherwise, a scalar:
+        # If it's a scalar type:
         return BASIC_TYPE_MAP.get((prop_type, prop_format), "UNKNOWN_TYPE")
 
     def generate_schema(self, schema_name):
         """
-        Create the CRTP base template and derived struct for a given schema name.
+        Create the CRTP base template and derived struct for schema_name.
+        - We do NOT inherit from references. Instead, references become data members.
         """
         if schema_name in self.generated:
-            return
-        self.generated.add(schema_name)
+            return  # Already done
 
         schema = self.schemas.get(schema_name)
         if not schema or not isinstance(schema, dict):
-            # Forward declare and skip
+            # We have no info about this schema, forward-declare at least
             self.forward_declarations.append(f"struct {schema_name};")
+            self.generated.add(schema_name)
             return
 
-        # Forward declarations
+        # Mark as generated to avoid re-entrance
+        self.generated.add(schema_name)
+
+        # Add forward declarations for the base & derived
         self.forward_declarations.append(f"template <typename Derived> struct {schema_name}Base;")
         self.forward_declarations.append(f"struct {schema_name};")
 
-        # Identify properties
+        # Gather properties
         props = schema.get('properties', {})
         required = schema.get('required', [])
 
-        # Figure out which references we inherit from
-        inherited_refs = []
-        normal_props = []
-
-        for prop_name, prop_schema in props.items():
-            if '$ref' in prop_schema:
-                ref_name = self.ref_to_name(prop_schema['$ref'])
-                # Generate that referenced schema first
-                self.generate_schema(ref_name)
-                inherited_refs.append(ref_name)
-            else:
-                # It's a normal property
-                ctype = self.get_cpp_type(prop_schema)
-                # If not required, you might wrap it in std::optional here:
-                # if prop_name not in required:
-                #     ctype = f"std::optional<{ctype}>"
-                normal_props.append((prop_name, ctype))
-
-        # Build the inheritance line:
-        # e.g. "struct FooBase : public BarBase<Derived>, public BazBase<Derived>"
-        inheritance_list = []
-        for ref_ in inherited_refs:
-            inheritance_list.append(f"public {ref_}Base<Derived>")
-        if inheritance_list:
-            inheritance_str = " : " + ", ".join(inheritance_list)
-        else:
-            inheritance_str = ""
-
-        # Build the CRTP base struct definition
         base_lines = []
         base_lines.append(f"template <typename Derived>")
-        base_lines.append(f"struct {schema_name}Base{inheritance_str} {{")
+        base_lines.append(f"struct {schema_name}Base {{")
 
-        if normal_props:
-            for (prop_name, ctype) in normal_props:
-                base_lines.append(f"    {ctype} {prop_name};")
-        else:
-            base_lines.append("    // no direct properties")
+        # For each property:
+        for prop_name, prop_schema in props.items():
+            # If this property references another schema, we must generate that schema first
+            # (We won't do inheritance, we'll just store that derived struct as a member.)
+            if '$ref' in prop_schema:
+                ref_name = self.ref_to_name(prop_schema['$ref'])
+                # Ensure that referenced schema is generated
+                self.generate_schema(ref_name)
+                # So the property type is 'ref_name' (the final derived struct)
+                cpp_type = ref_name
+            else:
+                # Normal property (scalar, array, object, or fallback)
+                cpp_type = self.get_cpp_type(prop_schema)
+
+            # If not required, you might want to wrap in std::optional:
+            # if prop_name not in required:
+            #     cpp_type = f"std::optional<{cpp_type}>"
+
+            base_lines.append(f"    {cpp_type} {prop_name};")
 
         base_lines.append("};\n")
         self.base_definitions.append("\n".join(base_lines))
 
-        # Build the derived struct
+        # Then the derived struct:
         derived_lines = []
         derived_lines.append(f"struct {schema_name} : public {schema_name}Base<{schema_name}> {{")
         derived_lines.append("    // specialized methods if needed")
@@ -139,34 +132,37 @@ class CRTPGenerator:
 
     def generate_all(self):
         """
-        Generate code for all schemas we know about.
+        Generate code for all schemas.
         """
         for name in sorted(self.schemas.keys()):
             self.generate_schema(name)
 
     def produce_code(self):
-        code = []
-        code.append("#pragma once")
-        code.append("#include <string>")
-        code.append("#include <vector>")
-        code.append("#include <optional>")
-        code.append("")
-        code.append("// If we ever generate a fallback or unknown type, this macro triggers a compile-time error.")
-        code.append('#define UNKNOWN_TYPE static_assert(false, "Unknown schema type encountered!");')
-        code.append("")
-        code.append("// Forward declarations:")
-        code.extend(self.forward_declarations)
-        code.append("\n// Base definitions (CRTP):")
-        code.extend(self.base_definitions)
-        code.append("\n// Derived definitions:")
-        code.extend(self.derived_definitions)
-        return "\n".join(code)
+        """
+        Produce the final C++ code as a single string.
+        """
+        output = []
+        output.append("#pragma once")
+        output.append("#include <string>")
+        output.append("#include <vector>")
+        output.append("#include <optional>")
+        output.append("")
+        output.append("// Fallback for unknown or unhandled schema types:")
+        output.append('#define UNKNOWN_TYPE static_assert(false, "Unknown schema type encountered!");')
+        output.append("")
+        output.append("// Forward declarations:")
+        output.extend(self.forward_declarations)
+        output.append("\n// Base definitions (CRTP):")
+        output.extend(self.base_definitions)
+        output.append("\n// Derived definitions:")
+        output.extend(self.derived_definitions)
+        return "\n".join(output)
 
 def main(openapi_path, output_path):
     with open(openapi_path, 'r') as f:
         doc = yaml.safe_load(f)
 
-    generator = CRTPGenerator(doc)
+    generator = CRTPGeneratorRefsAsMembers(doc)
     generator.generate_all()
     code = generator.produce_code()
 
@@ -178,7 +174,7 @@ def main(openapi_path, output_path):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: python generate_crtp_code.py <openapi.yaml> [output.cpp or -]")
+        print(f"Usage: python {sys.argv[0]} <openapi.yaml> [output_file or -]")
         sys.exit(1)
 
     openapi_file = sys.argv[1]

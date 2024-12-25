@@ -3,7 +3,7 @@
 #include <vector>
 #include <optional>
 
-// If we ever generate a fallback or unknown type, this macro triggers a compile-time error.
+// Fallback for unknown or unhandled schema types:
 #define UNKNOWN_TYPE static_assert(false, "Unknown schema type encountered!");
 
 // Forward declarations:
@@ -604,13 +604,12 @@ struct ApiKeyListBase {
 
 template <typename Derived>
 struct AssistantsApiResponseFormatOptionBase {
-    // no direct properties
 };
 
 template <typename Derived>
-struct AssistantObjectBase : public AssistantsApiResponseFormatOptionBase<Derived> {
+struct AssistantObjectBase {
     std::string id;
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     int created_at;
     std::string name;
     std::string description;
@@ -621,65 +620,63 @@ struct AssistantObjectBase : public AssistantsApiResponseFormatOptionBase<Derive
     UNKNOWN_TYPE metadata;
     double temperature;
     double top_p;
+    AssistantsApiResponseFormatOption response_format;
 };
 
 template <typename Derived>
 struct AssistantStreamEventBase {
-    // no direct properties
 };
 
 template <typename Derived>
 struct AssistantToolsCodeBase {
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
 };
 
 template <typename Derived>
 struct AssistantToolsFileSearchBase {
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     UNKNOWN_TYPE file_search;
 };
 
 template <typename Derived>
 struct AssistantToolsFileSearchTypeOnlyBase {
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
 };
 
 template <typename Derived>
 struct FunctionParametersBase {
-    // no direct properties
 };
 
 template <typename Derived>
-struct FunctionObjectBase : public FunctionParametersBase<Derived> {
+struct FunctionObjectBase {
     std::string description;
     std::string name;
+    FunctionParameters parameters;
     bool strict;
 };
 
 template <typename Derived>
-struct AssistantToolsFunctionBase : public FunctionObjectBase<Derived> {
-    std::string  // or generate an enum type;
+struct AssistantToolsFunctionBase {
+    std::string  // or generated enum type;
+    FunctionObject function;
 };
 
 template <typename Derived>
 struct AssistantsApiToolChoiceOptionBase {
-    // no direct properties
 };
 
 template <typename Derived>
 struct AssistantsNamedToolChoiceBase {
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     UNKNOWN_TYPE function;
 };
 
 template <typename Derived>
 struct AudioResponseFormatBase {
-    // no direct properties
 };
 
 template <typename Derived>
 struct AuditLogEventTypeBase {
-    // no direct properties
 };
 
 template <typename Derived>
@@ -689,7 +686,8 @@ struct AuditLogActorUserBase {
 };
 
 template <typename Derived>
-struct AuditLogActorSessionBase : public AuditLogActorUserBase<Derived> {
+struct AuditLogActorSessionBase {
+    AuditLogActorUser user;
     std::string ip_address;
 };
 
@@ -699,21 +697,27 @@ struct AuditLogActorServiceAccountBase {
 };
 
 template <typename Derived>
-struct AuditLogActorApiKeyBase : public AuditLogActorUserBase<Derived>, public AuditLogActorServiceAccountBase<Derived> {
+struct AuditLogActorApiKeyBase {
     std::string id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
+    AuditLogActorUser user;
+    AuditLogActorServiceAccount service_account;
 };
 
 template <typename Derived>
-struct AuditLogActorBase : public AuditLogActorSessionBase<Derived>, public AuditLogActorApiKeyBase<Derived> {
-    std::string  // or generate an enum type;
+struct AuditLogActorBase {
+    std::string  // or generated enum type;
+    AuditLogActorSession session;
+    AuditLogActorApiKey api_key;
 };
 
 template <typename Derived>
-struct AuditLogBase : public AuditLogEventTypeBase<Derived>, public AuditLogActorBase<Derived> {
+struct AuditLogBase {
     std::string id;
+    AuditLogEventType type;
     int effective_at;
     UNKNOWN_TYPE project;
+    AuditLogActor actor;
     UNKNOWN_TYPE api_key.created;
     UNKNOWN_TYPE api_key.updated;
     UNKNOWN_TYPE api_key.deleted;
@@ -738,18 +742,18 @@ struct AuditLogBase : public AuditLogEventTypeBase<Derived>, public AuditLogActo
 
 template <typename Derived>
 struct AutoChunkingStrategyRequestParamBase {
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
 };
 
 template <typename Derived>
 struct BatchBase {
     std::string id;
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     std::string endpoint;
     UNKNOWN_TYPE errors;
     std::string input_file_id;
     std::string completion_window;
-    std::string  // or generate an enum status;
+    std::string  // or generated enum status;
     std::string output_file_id;
     std::string error_file_id;
     int created_at;
@@ -768,7 +772,7 @@ struct BatchBase {
 template <typename Derived>
 struct BatchRequestInputBase {
     std::string custom_id;
-    std::string  // or generate an enum method;
+    std::string  // or generated enum method;
     std::string url;
 };
 
@@ -782,7 +786,6 @@ struct BatchRequestOutputBase {
 
 template <typename Derived>
 struct CancelUploadRequestBase {
-    // no direct properties
 };
 
 template <typename Derived>
@@ -791,15 +794,16 @@ struct ChatCompletionFunctionCallOptionBase {
 };
 
 template <typename Derived>
-struct ChatCompletionFunctionsBase : public FunctionParametersBase<Derived> {
+struct ChatCompletionFunctionsBase {
     std::string description;
     std::string name;
+    FunctionParameters parameters;
 };
 
 template <typename Derived>
 struct ChatCompletionMessageToolCallBase {
     std::string id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     UNKNOWN_TYPE function;
 };
 
@@ -807,132 +811,126 @@ template <typename Derived>
 struct ChatCompletionMessageToolCallChunkBase {
     int index;
     std::string id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     UNKNOWN_TYPE function;
 };
 
 template <typename Derived>
 struct ChatCompletionMessageToolCallsBase {
-    // no direct properties
 };
 
 template <typename Derived>
 struct ChatCompletionModalitiesBase {
-    // no direct properties
 };
 
 template <typename Derived>
 struct ChatCompletionNamedToolChoiceBase {
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     UNKNOWN_TYPE function;
 };
 
 template <typename Derived>
-struct ChatCompletionRequestAssistantMessageBase : public ChatCompletionMessageToolCallsBase<Derived> {
+struct ChatCompletionRequestAssistantMessageBase {
     UNKNOWN_TYPE content;
     std::string refusal;
-    std::string  // or generate an enum role;
+    std::string  // or generated enum role;
     std::string name;
     UNKNOWN_TYPE audio;
+    ChatCompletionMessageToolCalls tool_calls;
     UNKNOWN_TYPE function_call;
 };
 
 template <typename Derived>
 struct ChatCompletionRequestAssistantMessageContentPartBase {
-    // no direct properties
 };
 
 template <typename Derived>
 struct ChatCompletionRequestDeveloperMessageBase {
     UNKNOWN_TYPE content;
-    std::string  // or generate an enum role;
+    std::string  // or generated enum role;
     std::string name;
 };
 
 template <typename Derived>
 struct ChatCompletionRequestFunctionMessageBase {
-    std::string  // or generate an enum role;
+    std::string  // or generated enum role;
     std::string content;
     std::string name;
 };
 
 template <typename Derived>
 struct ChatCompletionRequestMessageBase {
-    // no direct properties
 };
 
 template <typename Derived>
 struct ChatCompletionRequestMessageContentPartAudioBase {
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     UNKNOWN_TYPE input_audio;
 };
 
 template <typename Derived>
 struct ChatCompletionRequestMessageContentPartImageBase {
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     UNKNOWN_TYPE image_url;
 };
 
 template <typename Derived>
 struct ChatCompletionRequestMessageContentPartRefusalBase {
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     std::string refusal;
 };
 
 template <typename Derived>
 struct ChatCompletionRequestMessageContentPartTextBase {
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     std::string text;
 };
 
 template <typename Derived>
 struct ChatCompletionRequestSystemMessageBase {
     UNKNOWN_TYPE content;
-    std::string  // or generate an enum role;
+    std::string  // or generated enum role;
     std::string name;
 };
 
 template <typename Derived>
 struct ChatCompletionRequestSystemMessageContentPartBase {
-    // no direct properties
 };
 
 template <typename Derived>
 struct ChatCompletionRequestToolMessageBase {
-    std::string  // or generate an enum role;
+    std::string  // or generated enum role;
     UNKNOWN_TYPE content;
     std::string tool_call_id;
 };
 
 template <typename Derived>
 struct ChatCompletionRequestToolMessageContentPartBase {
-    // no direct properties
 };
 
 template <typename Derived>
 struct ChatCompletionRequestUserMessageBase {
     UNKNOWN_TYPE content;
-    std::string  // or generate an enum role;
+    std::string  // or generated enum role;
     std::string name;
 };
 
 template <typename Derived>
 struct ChatCompletionRequestUserMessageContentPartBase {
-    // no direct properties
 };
 
 template <typename Derived>
-struct ChatCompletionResponseMessageBase : public ChatCompletionMessageToolCallsBase<Derived> {
+struct ChatCompletionResponseMessageBase {
     std::string content;
     std::string refusal;
-    std::string  // or generate an enum role;
+    ChatCompletionMessageToolCalls tool_calls;
+    std::string  // or generated enum role;
     UNKNOWN_TYPE function_call;
     UNKNOWN_TYPE audio;
 };
 
 template <typename Derived>
 struct ChatCompletionRoleBase {
-    // no direct properties
 };
 
 template <typename Derived>
@@ -945,7 +943,7 @@ struct ChatCompletionStreamResponseDeltaBase {
     std::string content;
     UNKNOWN_TYPE function_call;
     std::vector<ChatCompletionMessageToolCallChunk> tool_calls;
-    std::string  // or generate an enum role;
+    std::string  // or generated enum role;
     std::string refusal;
 };
 
@@ -958,18 +956,17 @@ struct ChatCompletionTokenLogprobBase {
 };
 
 template <typename Derived>
-struct ChatCompletionToolBase : public FunctionObjectBase<Derived> {
-    std::string  // or generate an enum type;
+struct ChatCompletionToolBase {
+    std::string  // or generated enum type;
+    FunctionObject function;
 };
 
 template <typename Derived>
 struct ChatCompletionToolChoiceOptionBase {
-    // no direct properties
 };
 
 template <typename Derived>
 struct ChunkingStrategyRequestParamBase {
-    // no direct properties
 };
 
 template <typename Derived>
@@ -989,14 +986,14 @@ struct CompletionUsageBase {
 
 template <typename Derived>
 struct CostsResultBase {
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     UNKNOWN_TYPE amount;
     std::string line_item;
     std::string project_id;
 };
 
 template <typename Derived>
-struct CreateAssistantRequestBase : public AssistantsApiResponseFormatOptionBase<Derived> {
+struct CreateAssistantRequestBase {
     UNKNOWN_TYPE model;
     std::string name;
     std::string description;
@@ -1006,34 +1003,34 @@ struct CreateAssistantRequestBase : public AssistantsApiResponseFormatOptionBase
     UNKNOWN_TYPE metadata;
     double temperature;
     double top_p;
+    AssistantsApiResponseFormatOption response_format;
 };
 
 template <typename Derived>
-struct CreateChatCompletionFunctionResponseBase : public CompletionUsageBase<Derived> {
+struct CreateChatCompletionFunctionResponseBase {
     std::string id;
     std::vector<UNKNOWN_TYPE> choices;
     int created;
     std::string model;
     std::string system_fingerprint;
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
+    CompletionUsage usage;
 };
 
 template <typename Derived>
 struct CreateChatCompletionImageResponseBase {
-    // no direct properties
 };
 
 template <typename Derived>
 struct ParallelToolCallsBase {
-    // no direct properties
 };
 
 template <typename Derived>
-struct CreateChatCompletionRequestBase : public ChatCompletionModalitiesBase<Derived>, public ChatCompletionStreamOptionsBase<Derived>, public ChatCompletionToolChoiceOptionBase<Derived>, public ParallelToolCallsBase<Derived> {
+struct CreateChatCompletionRequestBase {
     std::vector<ChatCompletionRequestMessage> messages;
     UNKNOWN_TYPE model;
     bool store;
-    std::string  // or generate an enum reasoning_effort;
+    std::string  // or generated enum reasoning_effort;
     UNKNOWN_TYPE metadata;
     double frequency_penalty;
     UNKNOWN_TYPE logit_bias;
@@ -1042,31 +1039,36 @@ struct CreateChatCompletionRequestBase : public ChatCompletionModalitiesBase<Der
     int max_tokens;
     int max_completion_tokens;
     int n;
+    ChatCompletionModalities modalities;
     UNKNOWN_TYPE prediction;
     UNKNOWN_TYPE audio;
     double presence_penalty;
     UNKNOWN_TYPE response_format;
     int seed;
-    std::string  // or generate an enum service_tier;
+    std::string  // or generated enum service_tier;
     UNKNOWN_TYPE stop;
     bool stream;
+    ChatCompletionStreamOptions stream_options;
     double temperature;
     double top_p;
     std::vector<ChatCompletionTool> tools;
+    ChatCompletionToolChoiceOption tool_choice;
+    ParallelToolCalls parallel_tool_calls;
     std::string user;
     UNKNOWN_TYPE function_call;
     std::vector<ChatCompletionFunctions> functions;
 };
 
 template <typename Derived>
-struct CreateChatCompletionResponseBase : public CompletionUsageBase<Derived> {
+struct CreateChatCompletionResponseBase {
     std::string id;
     std::vector<UNKNOWN_TYPE> choices;
     int created;
     std::string model;
-    std::string  // or generate an enum service_tier;
+    std::string  // or generated enum service_tier;
     std::string system_fingerprint;
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
+    CompletionUsage usage;
 };
 
 template <typename Derived>
@@ -1075,14 +1077,14 @@ struct CreateChatCompletionStreamResponseBase {
     std::vector<UNKNOWN_TYPE> choices;
     int created;
     std::string model;
-    std::string  // or generate an enum service_tier;
+    std::string  // or generated enum service_tier;
     std::string system_fingerprint;
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     UNKNOWN_TYPE usage;
 };
 
 template <typename Derived>
-struct CreateCompletionRequestBase : public ChatCompletionStreamOptionsBase<Derived> {
+struct CreateCompletionRequestBase {
     UNKNOWN_TYPE model;
     UNKNOWN_TYPE prompt;
     int best_of;
@@ -1096,6 +1098,7 @@ struct CreateCompletionRequestBase : public ChatCompletionStreamOptionsBase<Deri
     int seed;
     UNKNOWN_TYPE stop;
     bool stream;
+    ChatCompletionStreamOptions stream_options;
     std::string suffix;
     double temperature;
     double top_p;
@@ -1103,20 +1106,21 @@ struct CreateCompletionRequestBase : public ChatCompletionStreamOptionsBase<Deri
 };
 
 template <typename Derived>
-struct CreateCompletionResponseBase : public CompletionUsageBase<Derived> {
+struct CreateCompletionResponseBase {
     std::string id;
     std::vector<UNKNOWN_TYPE> choices;
     int created;
     std::string model;
     std::string system_fingerprint;
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
+    CompletionUsage usage;
 };
 
 template <typename Derived>
 struct CreateEmbeddingRequestBase {
     UNKNOWN_TYPE input;
     UNKNOWN_TYPE model;
-    std::string  // or generate an enum encoding_format;
+    std::string  // or generated enum encoding_format;
     int dimensions;
     std::string user;
 };
@@ -1125,14 +1129,14 @@ template <typename Derived>
 struct CreateEmbeddingResponseBase {
     std::vector<Embedding> data;
     std::string model;
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     UNKNOWN_TYPE usage;
 };
 
 template <typename Derived>
 struct CreateFileRequestBase {
     UNKNOWN_TYPE file;
-    std::string  // or generate an enum purpose;
+    std::string  // or generated enum purpose;
 };
 
 template <typename Derived>
@@ -1146,12 +1150,14 @@ struct FineTuneDPOMethodBase {
 };
 
 template <typename Derived>
-struct FineTuneMethodBase : public FineTuneSupervisedMethodBase<Derived>, public FineTuneDPOMethodBase<Derived> {
-    std::string  // or generate an enum type;
+struct FineTuneMethodBase {
+    std::string  // or generated enum type;
+    FineTuneSupervisedMethod supervised;
+    FineTuneDPOMethod dpo;
 };
 
 template <typename Derived>
-struct CreateFineTuningJobRequestBase : public FineTuneMethodBase<Derived> {
+struct CreateFineTuningJobRequestBase {
     UNKNOWN_TYPE model;
     std::string training_file;
     UNKNOWN_TYPE hyperparameters;
@@ -1159,6 +1165,7 @@ struct CreateFineTuningJobRequestBase : public FineTuneMethodBase<Derived> {
     std::string validation_file;
     std::vector<UNKNOWN_TYPE> integrations;
     int seed;
+    FineTuneMethod method;
 };
 
 template <typename Derived>
@@ -1168,8 +1175,8 @@ struct CreateImageEditRequestBase {
     UNKNOWN_TYPE mask;
     UNKNOWN_TYPE model;
     int n;
-    std::string  // or generate an enum size;
-    std::string  // or generate an enum response_format;
+    std::string  // or generated enum size;
+    std::string  // or generated enum response_format;
     std::string user;
 };
 
@@ -1178,10 +1185,10 @@ struct CreateImageRequestBase {
     std::string prompt;
     UNKNOWN_TYPE model;
     int n;
-    std::string  // or generate an enum quality;
-    std::string  // or generate an enum response_format;
-    std::string  // or generate an enum size;
-    std::string  // or generate an enum style;
+    std::string  // or generated enum quality;
+    std::string  // or generated enum response_format;
+    std::string  // or generated enum size;
+    std::string  // or generated enum style;
     std::string user;
 };
 
@@ -1190,14 +1197,14 @@ struct CreateImageVariationRequestBase {
     UNKNOWN_TYPE image;
     UNKNOWN_TYPE model;
     int n;
-    std::string  // or generate an enum response_format;
-    std::string  // or generate an enum size;
+    std::string  // or generated enum response_format;
+    std::string  // or generated enum size;
     std::string user;
 };
 
 template <typename Derived>
 struct CreateMessageRequestBase {
-    std::string  // or generate an enum role;
+    std::string  // or generated enum role;
     UNKNOWN_TYPE content;
     std::vector<UNKNOWN_TYPE> attachments;
     UNKNOWN_TYPE metadata;
@@ -1218,12 +1225,12 @@ struct CreateModerationResponseBase {
 
 template <typename Derived>
 struct TruncationObjectBase {
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     int last_messages;
 };
 
 template <typename Derived>
-struct CreateRunRequestBase : public TruncationObjectBase<Derived>, public AssistantsApiToolChoiceOptionBase<Derived>, public ParallelToolCallsBase<Derived>, public AssistantsApiResponseFormatOptionBase<Derived> {
+struct CreateRunRequestBase {
     std::string assistant_id;
     UNKNOWN_TYPE model;
     std::string instructions;
@@ -1236,14 +1243,18 @@ struct CreateRunRequestBase : public TruncationObjectBase<Derived>, public Assis
     bool stream;
     int max_prompt_tokens;
     int max_completion_tokens;
+    TruncationObject truncation_strategy;
+    AssistantsApiToolChoiceOption tool_choice;
+    ParallelToolCalls parallel_tool_calls;
+    AssistantsApiResponseFormatOption response_format;
 };
 
 template <typename Derived>
 struct CreateSpeechRequestBase {
     UNKNOWN_TYPE model;
     std::string input;
-    std::string  // or generate an enum voice;
-    std::string  // or generate an enum response_format;
+    std::string  // or generated enum voice;
+    std::string  // or generated enum response_format;
     double speed;
 };
 
@@ -1255,8 +1266,9 @@ struct CreateThreadRequestBase {
 };
 
 template <typename Derived>
-struct CreateThreadAndRunRequestBase : public CreateThreadRequestBase<Derived>, public TruncationObjectBase<Derived>, public AssistantsApiToolChoiceOptionBase<Derived>, public ParallelToolCallsBase<Derived>, public AssistantsApiResponseFormatOptionBase<Derived> {
+struct CreateThreadAndRunRequestBase {
     std::string assistant_id;
+    CreateThreadRequest thread;
     UNKNOWN_TYPE model;
     std::string instructions;
     std::vector<UNKNOWN_TYPE> tools;
@@ -1267,16 +1279,21 @@ struct CreateThreadAndRunRequestBase : public CreateThreadRequestBase<Derived>, 
     bool stream;
     int max_prompt_tokens;
     int max_completion_tokens;
+    TruncationObject truncation_strategy;
+    AssistantsApiToolChoiceOption tool_choice;
+    ParallelToolCalls parallel_tool_calls;
+    AssistantsApiResponseFormatOption response_format;
 };
 
 template <typename Derived>
-struct CreateTranscriptionRequestBase : public AudioResponseFormatBase<Derived> {
+struct CreateTranscriptionRequestBase {
     UNKNOWN_TYPE file;
     UNKNOWN_TYPE model;
     std::string language;
     std::string prompt;
+    AudioResponseFormat response_format;
     double temperature;
-    std::vector<std::string  // or generate an enum> timestamp_granularities[];
+    std::vector<std::string  // or generated enum> timestamp_granularities[];
 };
 
 template <typename Derived>
@@ -1294,10 +1311,11 @@ struct CreateTranscriptionResponseVerboseJsonBase {
 };
 
 template <typename Derived>
-struct CreateTranslationRequestBase : public AudioResponseFormatBase<Derived> {
+struct CreateTranslationRequestBase {
     UNKNOWN_TYPE file;
     UNKNOWN_TYPE model;
     std::string prompt;
+    AudioResponseFormat response_format;
     double temperature;
 };
 
@@ -1317,31 +1335,34 @@ struct CreateTranslationResponseVerboseJsonBase {
 template <typename Derived>
 struct CreateUploadRequestBase {
     std::string filename;
-    std::string  // or generate an enum purpose;
+    std::string  // or generated enum purpose;
     int bytes;
     std::string mime_type;
 };
 
 template <typename Derived>
-struct CreateVectorStoreFileBatchRequestBase : public ChunkingStrategyRequestParamBase<Derived> {
+struct CreateVectorStoreFileBatchRequestBase {
     std::vector<std::string> file_ids;
+    ChunkingStrategyRequestParam chunking_strategy;
 };
 
 template <typename Derived>
-struct CreateVectorStoreFileRequestBase : public ChunkingStrategyRequestParamBase<Derived> {
+struct CreateVectorStoreFileRequestBase {
     std::string file_id;
+    ChunkingStrategyRequestParam chunking_strategy;
 };
 
 template <typename Derived>
 struct VectorStoreExpirationAfterBase {
-    std::string  // or generate an enum anchor;
+    std::string  // or generated enum anchor;
     int days;
 };
 
 template <typename Derived>
-struct CreateVectorStoreRequestBase : public VectorStoreExpirationAfterBase<Derived> {
+struct CreateVectorStoreRequestBase {
     std::vector<std::string> file_ids;
     std::string name;
+    VectorStoreExpirationAfter expires_after;
     UNKNOWN_TYPE chunking_strategy;
     UNKNOWN_TYPE metadata;
 };
@@ -1356,13 +1377,13 @@ template <typename Derived>
 struct DeleteAssistantResponseBase {
     std::string id;
     bool deleted;
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
 };
 
 template <typename Derived>
 struct DeleteFileResponseBase {
     std::string id;
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     bool deleted;
 };
 
@@ -1370,7 +1391,7 @@ template <typename Derived>
 struct DeleteMessageResponseBase {
     std::string id;
     bool deleted;
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
 };
 
 template <typename Derived>
@@ -1384,34 +1405,34 @@ template <typename Derived>
 struct DeleteThreadResponseBase {
     std::string id;
     bool deleted;
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
 };
 
 template <typename Derived>
 struct DeleteVectorStoreFileResponseBase {
     std::string id;
     bool deleted;
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
 };
 
 template <typename Derived>
 struct DeleteVectorStoreResponseBase {
     std::string id;
     bool deleted;
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
 };
 
 template <typename Derived>
 struct DoneEventBase {
-    std::string  // or generate an enum event;
-    std::string  // or generate an enum data;
+    std::string  // or generated enum event;
+    std::string  // or generated enum data;
 };
 
 template <typename Derived>
 struct EmbeddingBase {
     int index;
     std::vector<double> embedding;
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
 };
 
 template <typename Derived>
@@ -1423,30 +1444,31 @@ struct ErrorBase {
 };
 
 template <typename Derived>
-struct ErrorEventBase : public ErrorBase<Derived> {
-    std::string  // or generate an enum event;
+struct ErrorEventBase {
+    std::string  // or generated enum event;
+    Error data;
 };
 
 template <typename Derived>
-struct ErrorResponseBase : public ErrorBase<Derived> {
-    // no direct properties
+struct ErrorResponseBase {
+    Error error;
 };
 
 template <typename Derived>
 struct FileSearchRankingOptionsBase {
-    std::string  // or generate an enum ranker;
+    std::string  // or generated enum ranker;
     double score_threshold;
 };
 
 template <typename Derived>
 struct FineTuneChatCompletionRequestAssistantMessageBase {
-    // no direct properties
 };
 
 template <typename Derived>
-struct FineTuneChatRequestInputBase : public ParallelToolCallsBase<Derived> {
+struct FineTuneChatRequestInputBase {
     std::vector<UNKNOWN_TYPE> messages;
     std::vector<ChatCompletionTool> tools;
+    ParallelToolCalls parallel_tool_calls;
     std::vector<ChatCompletionFunctions> functions;
 };
 
@@ -1465,12 +1487,12 @@ struct FineTunePreferenceRequestInputBase {
 
 template <typename Derived>
 struct FineTuningIntegrationBase {
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     UNKNOWN_TYPE wandb;
 };
 
 template <typename Derived>
-struct FineTuningJobBase : public FineTuneMethodBase<Derived> {
+struct FineTuningJobBase {
     std::string id;
     int created_at;
     UNKNOWN_TYPE error;
@@ -1478,16 +1500,17 @@ struct FineTuningJobBase : public FineTuneMethodBase<Derived> {
     int finished_at;
     UNKNOWN_TYPE hyperparameters;
     std::string model;
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     std::string organization_id;
     std::vector<std::string> result_files;
-    std::string  // or generate an enum status;
+    std::string  // or generated enum status;
     int trained_tokens;
     std::string training_file;
     std::string validation_file;
     std::vector<UNKNOWN_TYPE> integrations;
     int seed;
     int estimated_finish;
+    FineTuneMethod method;
 };
 
 template <typename Derived>
@@ -1498,17 +1521,17 @@ struct FineTuningJobCheckpointBase {
     int step_number;
     UNKNOWN_TYPE metrics;
     std::string fine_tuning_job_id;
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
 };
 
 template <typename Derived>
 struct FineTuningJobEventBase {
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     std::string id;
     int created_at;
-    std::string  // or generate an enum level;
+    std::string  // or generated enum level;
     std::string message;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     UNKNOWN_TYPE data;
 };
 
@@ -1527,11 +1550,11 @@ struct ImagesResponseBase {
 
 template <typename Derived>
 struct InviteBase {
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     std::string id;
     std::string email;
-    std::string  // or generate an enum role;
-    std::string  // or generate an enum status;
+    std::string  // or generated enum role;
+    std::string  // or generated enum status;
     int invited_at;
     int expires_at;
     int accepted_at;
@@ -1540,14 +1563,14 @@ struct InviteBase {
 
 template <typename Derived>
 struct InviteDeleteResponseBase {
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     std::string id;
     bool deleted;
 };
 
 template <typename Derived>
 struct InviteListResponseBase {
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     std::vector<Invite> data;
     std::string first_id;
     std::string last_id;
@@ -1557,7 +1580,7 @@ struct InviteListResponseBase {
 template <typename Derived>
 struct InviteRequestBase {
     std::string email;
-    std::string  // or generate an enum role;
+    std::string  // or generated enum role;
     std::vector<UNKNOWN_TYPE> projects;
 };
 
@@ -1572,7 +1595,7 @@ struct ListAssistantsResponseBase {
 
 template <typename Derived>
 struct ListAuditLogsResponseBase {
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     std::vector<AuditLog> data;
     std::string first_id;
     std::string last_id;
@@ -1585,7 +1608,7 @@ struct ListBatchesResponseBase {
     std::string first_id;
     std::string last_id;
     bool has_more;
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
 };
 
 template <typename Derived>
@@ -1600,7 +1623,7 @@ struct ListFilesResponseBase {
 template <typename Derived>
 struct ListFineTuningJobCheckpointsResponseBase {
     std::vector<FineTuningJobCheckpoint> data;
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     std::string first_id;
     std::string last_id;
     bool has_more;
@@ -1609,7 +1632,7 @@ struct ListFineTuningJobCheckpointsResponseBase {
 template <typename Derived>
 struct ListFineTuningJobEventsResponseBase {
     std::vector<FineTuningJobEvent> data;
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
 };
 
 template <typename Derived>
@@ -1623,7 +1646,7 @@ struct ListMessagesResponseBase {
 
 template <typename Derived>
 struct ListModelsResponseBase {
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     std::vector<Model> data;
 };
 
@@ -1631,7 +1654,7 @@ template <typename Derived>
 struct ListPaginatedFineTuningJobsResponseBase {
     std::vector<FineTuningJob> data;
     bool has_more;
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
 };
 
 template <typename Derived>
@@ -1681,25 +1704,25 @@ struct ListVectorStoresResponseBase {
 
 template <typename Derived>
 struct MessageContentImageFileObjectBase {
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     UNKNOWN_TYPE image_file;
 };
 
 template <typename Derived>
 struct MessageContentImageUrlObjectBase {
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     UNKNOWN_TYPE image_url;
 };
 
 template <typename Derived>
 struct MessageContentRefusalObjectBase {
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     std::string refusal;
 };
 
 template <typename Derived>
 struct MessageContentTextAnnotationsFileCitationObjectBase {
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     std::string text;
     UNKNOWN_TYPE file_citation;
     int start_index;
@@ -1708,7 +1731,7 @@ struct MessageContentTextAnnotationsFileCitationObjectBase {
 
 template <typename Derived>
 struct MessageContentTextAnnotationsFilePathObjectBase {
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     std::string text;
     UNKNOWN_TYPE file_path;
     int start_index;
@@ -1717,35 +1740,35 @@ struct MessageContentTextAnnotationsFilePathObjectBase {
 
 template <typename Derived>
 struct MessageContentTextObjectBase {
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     UNKNOWN_TYPE text;
 };
 
 template <typename Derived>
 struct MessageDeltaContentImageFileObjectBase {
     int index;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     UNKNOWN_TYPE image_file;
 };
 
 template <typename Derived>
 struct MessageDeltaContentImageUrlObjectBase {
     int index;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     UNKNOWN_TYPE image_url;
 };
 
 template <typename Derived>
 struct MessageDeltaContentRefusalObjectBase {
     int index;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     std::string refusal;
 };
 
 template <typename Derived>
 struct MessageDeltaContentTextAnnotationsFileCitationObjectBase {
     int index;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     std::string text;
     UNKNOWN_TYPE file_citation;
     int start_index;
@@ -1755,7 +1778,7 @@ struct MessageDeltaContentTextAnnotationsFileCitationObjectBase {
 template <typename Derived>
 struct MessageDeltaContentTextAnnotationsFilePathObjectBase {
     int index;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     std::string text;
     UNKNOWN_TYPE file_path;
     int start_index;
@@ -1765,28 +1788,28 @@ struct MessageDeltaContentTextAnnotationsFilePathObjectBase {
 template <typename Derived>
 struct MessageDeltaContentTextObjectBase {
     int index;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     UNKNOWN_TYPE text;
 };
 
 template <typename Derived>
 struct MessageDeltaObjectBase {
     std::string id;
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     UNKNOWN_TYPE delta;
 };
 
 template <typename Derived>
 struct MessageObjectBase {
     std::string id;
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     int created_at;
     std::string thread_id;
-    std::string  // or generate an enum status;
+    std::string  // or generated enum status;
     UNKNOWN_TYPE incomplete_details;
     int completed_at;
     int incomplete_at;
-    std::string  // or generate an enum role;
+    std::string  // or generated enum role;
     std::vector<UNKNOWN_TYPE> content;
     std::string assistant_id;
     std::string run_id;
@@ -1796,25 +1819,24 @@ struct MessageObjectBase {
 
 template <typename Derived>
 struct MessageRequestContentTextObjectBase {
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     std::string text;
 };
 
 template <typename Derived>
 struct MessageStreamEventBase {
-    // no direct properties
 };
 
 template <typename Derived>
 struct ModelBase {
     std::string id;
     int created;
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     std::string owned_by;
 };
 
 template <typename Derived>
-struct ModifyAssistantRequestBase : public AssistantsApiResponseFormatOptionBase<Derived> {
+struct ModifyAssistantRequestBase {
     UNKNOWN_TYPE model;
     std::string name;
     std::string description;
@@ -1824,6 +1846,7 @@ struct ModifyAssistantRequestBase : public AssistantsApiResponseFormatOptionBase
     UNKNOWN_TYPE metadata;
     double temperature;
     double top_p;
+    AssistantsApiResponseFormatOption response_format;
 };
 
 template <typename Derived>
@@ -1848,36 +1871,36 @@ struct OpenAIFileBase {
     int bytes;
     int created_at;
     std::string filename;
-    std::string  // or generate an enum object;
-    std::string  // or generate an enum purpose;
-    std::string  // or generate an enum status;
+    std::string  // or generated enum object;
+    std::string  // or generated enum purpose;
+    std::string  // or generated enum status;
     std::string status_details;
 };
 
 template <typename Derived>
 struct OtherChunkingStrategyResponseParamBase {
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
 };
 
 template <typename Derived>
 struct PredictionContentBase {
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     UNKNOWN_TYPE content;
 };
 
 template <typename Derived>
 struct ProjectBase {
     std::string id;
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     std::string name;
     int created_at;
     int archived_at;
-    std::string  // or generate an enum status;
+    std::string  // or generated enum status;
 };
 
 template <typename Derived>
 struct ProjectApiKeyBase {
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     std::string redacted_value;
     std::string name;
     int created_at;
@@ -1887,14 +1910,14 @@ struct ProjectApiKeyBase {
 
 template <typename Derived>
 struct ProjectApiKeyDeleteResponseBase {
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     std::string id;
     bool deleted;
 };
 
 template <typename Derived>
 struct ProjectApiKeyListResponseBase {
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     std::vector<ProjectApiKey> data;
     std::string first_id;
     std::string last_id;
@@ -1908,7 +1931,7 @@ struct ProjectCreateRequestBase {
 
 template <typename Derived>
 struct ProjectListResponseBase {
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     std::vector<Project> data;
     std::string first_id;
     std::string last_id;
@@ -1917,7 +1940,7 @@ struct ProjectListResponseBase {
 
 template <typename Derived>
 struct ProjectRateLimitBase {
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     std::string id;
     std::string model;
     int max_requests_per_1_minute;
@@ -1930,7 +1953,7 @@ struct ProjectRateLimitBase {
 
 template <typename Derived>
 struct ProjectRateLimitListResponseBase {
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     std::vector<ProjectRateLimit> data;
     std::string first_id;
     std::string last_id;
@@ -1949,16 +1972,16 @@ struct ProjectRateLimitUpdateRequestBase {
 
 template <typename Derived>
 struct ProjectServiceAccountBase {
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     std::string id;
     std::string name;
-    std::string  // or generate an enum role;
+    std::string  // or generated enum role;
     int created_at;
 };
 
 template <typename Derived>
 struct ProjectServiceAccountApiKeyBase {
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     std::string value;
     std::string name;
     int created_at;
@@ -1971,24 +1994,25 @@ struct ProjectServiceAccountCreateRequestBase {
 };
 
 template <typename Derived>
-struct ProjectServiceAccountCreateResponseBase : public ProjectServiceAccountApiKeyBase<Derived> {
-    std::string  // or generate an enum object;
+struct ProjectServiceAccountCreateResponseBase {
+    std::string  // or generated enum object;
     std::string id;
     std::string name;
-    std::string  // or generate an enum role;
+    std::string  // or generated enum role;
     int created_at;
+    ProjectServiceAccountApiKey api_key;
 };
 
 template <typename Derived>
 struct ProjectServiceAccountDeleteResponseBase {
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     std::string id;
     bool deleted;
 };
 
 template <typename Derived>
 struct ProjectServiceAccountListResponseBase {
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     std::vector<ProjectServiceAccount> data;
     std::string first_id;
     std::string last_id;
@@ -2002,23 +2026,23 @@ struct ProjectUpdateRequestBase {
 
 template <typename Derived>
 struct ProjectUserBase {
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     std::string id;
     std::string name;
     std::string email;
-    std::string  // or generate an enum role;
+    std::string  // or generated enum role;
     int added_at;
 };
 
 template <typename Derived>
 struct ProjectUserCreateRequestBase {
     std::string user_id;
-    std::string  // or generate an enum role;
+    std::string  // or generated enum role;
 };
 
 template <typename Derived>
 struct ProjectUserDeleteResponseBase {
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     std::string id;
     bool deleted;
 };
@@ -2034,16 +2058,16 @@ struct ProjectUserListResponseBase {
 
 template <typename Derived>
 struct ProjectUserUpdateRequestBase {
-    std::string  // or generate an enum role;
+    std::string  // or generated enum role;
 };
 
 template <typename Derived>
 struct RealtimeConversationItemBase {
     std::string id;
-    std::string  // or generate an enum type;
-    std::string  // or generate an enum object;
-    std::string  // or generate an enum status;
-    std::string  // or generate an enum role;
+    std::string  // or generated enum type;
+    std::string  // or generated enum object;
+    std::string  // or generated enum status;
+    std::string  // or generated enum role;
     std::vector<UNKNOWN_TYPE> content;
     std::string call_id;
     std::string name;
@@ -2052,23 +2076,24 @@ struct RealtimeConversationItemBase {
 };
 
 template <typename Derived>
-struct RealtimeClientEventConversationItemCreateBase : public RealtimeConversationItemBase<Derived> {
+struct RealtimeClientEventConversationItemCreateBase {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     std::string previous_item_id;
+    RealtimeConversationItem item;
 };
 
 template <typename Derived>
 struct RealtimeClientEventConversationItemDeleteBase {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     std::string item_id;
 };
 
 template <typename Derived>
 struct RealtimeClientEventConversationItemTruncateBase {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     std::string item_id;
     int content_index;
     int audio_end_ms;
@@ -2077,35 +2102,35 @@ struct RealtimeClientEventConversationItemTruncateBase {
 template <typename Derived>
 struct RealtimeClientEventInputAudioBufferAppendBase {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     std::string audio;
 };
 
 template <typename Derived>
 struct RealtimeClientEventInputAudioBufferClearBase {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
 };
 
 template <typename Derived>
 struct RealtimeClientEventInputAudioBufferCommitBase {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
 };
 
 template <typename Derived>
 struct RealtimeClientEventResponseCancelBase {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     std::string response_id;
 };
 
 template <typename Derived>
 struct RealtimeResponseCreateParamsBase {
-    std::vector<std::string  // or generate an enum> modalities;
+    std::vector<std::string  // or generated enum> modalities;
     std::string instructions;
-    std::string  // or generate an enum voice;
-    std::string  // or generate an enum output_audio_format;
+    std::string  // or generated enum voice;
+    std::string  // or generated enum output_audio_format;
     std::vector<UNKNOWN_TYPE> tools;
     std::string tool_choice;
     double temperature;
@@ -2116,19 +2141,20 @@ struct RealtimeResponseCreateParamsBase {
 };
 
 template <typename Derived>
-struct RealtimeClientEventResponseCreateBase : public RealtimeResponseCreateParamsBase<Derived> {
+struct RealtimeClientEventResponseCreateBase {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
+    RealtimeResponseCreateParams response;
 };
 
 template <typename Derived>
 struct RealtimeSessionCreateRequestBase {
     UNKNOWN_TYPE modalities;
-    std::string  // or generate an enum model;
+    std::string  // or generated enum model;
     std::string instructions;
-    std::string  // or generate an enum voice;
-    std::string  // or generate an enum input_audio_format;
-    std::string  // or generate an enum output_audio_format;
+    std::string  // or generated enum voice;
+    std::string  // or generated enum input_audio_format;
+    std::string  // or generated enum output_audio_format;
     UNKNOWN_TYPE input_audio_transcription;
     UNKNOWN_TYPE turn_detection;
     std::vector<UNKNOWN_TYPE> tools;
@@ -2138,16 +2164,17 @@ struct RealtimeSessionCreateRequestBase {
 };
 
 template <typename Derived>
-struct RealtimeClientEventSessionUpdateBase : public RealtimeSessionCreateRequestBase<Derived> {
+struct RealtimeClientEventSessionUpdateBase {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
+    RealtimeSessionCreateRequest session;
 };
 
 template <typename Derived>
 struct RealtimeResponseBase {
     std::string id;
-    std::string  // or generate an enum object;
-    std::string  // or generate an enum status;
+    std::string  // or generated enum object;
+    std::string  // or generated enum status;
     UNKNOWN_TYPE status_details;
     std::vector<RealtimeConversationItem> output;
     UNKNOWN_TYPE metadata;
@@ -2157,28 +2184,29 @@ struct RealtimeResponseBase {
 template <typename Derived>
 struct RealtimeServerEventConversationCreatedBase {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     UNKNOWN_TYPE conversation;
 };
 
 template <typename Derived>
-struct RealtimeServerEventConversationItemCreatedBase : public RealtimeConversationItemBase<Derived> {
+struct RealtimeServerEventConversationItemCreatedBase {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     std::string previous_item_id;
+    RealtimeConversationItem item;
 };
 
 template <typename Derived>
 struct RealtimeServerEventConversationItemDeletedBase {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     std::string item_id;
 };
 
 template <typename Derived>
 struct RealtimeServerEventConversationItemInputAudioTranscriptionCompletedBase {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     std::string item_id;
     int content_index;
     std::string transcript;
@@ -2187,7 +2215,7 @@ struct RealtimeServerEventConversationItemInputAudioTranscriptionCompletedBase {
 template <typename Derived>
 struct RealtimeServerEventConversationItemInputAudioTranscriptionFailedBase {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     std::string item_id;
     int content_index;
     UNKNOWN_TYPE error;
@@ -2196,7 +2224,7 @@ struct RealtimeServerEventConversationItemInputAudioTranscriptionFailedBase {
 template <typename Derived>
 struct RealtimeServerEventConversationItemTruncatedBase {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     std::string item_id;
     int content_index;
     int audio_end_ms;
@@ -2205,20 +2233,20 @@ struct RealtimeServerEventConversationItemTruncatedBase {
 template <typename Derived>
 struct RealtimeServerEventErrorBase {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     UNKNOWN_TYPE error;
 };
 
 template <typename Derived>
 struct RealtimeServerEventInputAudioBufferClearedBase {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
 };
 
 template <typename Derived>
 struct RealtimeServerEventInputAudioBufferCommittedBase {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     std::string previous_item_id;
     std::string item_id;
 };
@@ -2226,7 +2254,7 @@ struct RealtimeServerEventInputAudioBufferCommittedBase {
 template <typename Derived>
 struct RealtimeServerEventInputAudioBufferSpeechStartedBase {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     int audio_start_ms;
     std::string item_id;
 };
@@ -2234,7 +2262,7 @@ struct RealtimeServerEventInputAudioBufferSpeechStartedBase {
 template <typename Derived>
 struct RealtimeServerEventInputAudioBufferSpeechStoppedBase {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     int audio_end_ms;
     std::string item_id;
 };
@@ -2242,14 +2270,14 @@ struct RealtimeServerEventInputAudioBufferSpeechStoppedBase {
 template <typename Derived>
 struct RealtimeServerEventRateLimitsUpdatedBase {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     std::vector<UNKNOWN_TYPE> rate_limits;
 };
 
 template <typename Derived>
 struct RealtimeServerEventResponseAudioDeltaBase {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     std::string response_id;
     std::string item_id;
     int output_index;
@@ -2260,7 +2288,7 @@ struct RealtimeServerEventResponseAudioDeltaBase {
 template <typename Derived>
 struct RealtimeServerEventResponseAudioDoneBase {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     std::string response_id;
     std::string item_id;
     int output_index;
@@ -2270,7 +2298,7 @@ struct RealtimeServerEventResponseAudioDoneBase {
 template <typename Derived>
 struct RealtimeServerEventResponseAudioTranscriptDeltaBase {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     std::string response_id;
     std::string item_id;
     int output_index;
@@ -2281,7 +2309,7 @@ struct RealtimeServerEventResponseAudioTranscriptDeltaBase {
 template <typename Derived>
 struct RealtimeServerEventResponseAudioTranscriptDoneBase {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     std::string response_id;
     std::string item_id;
     int output_index;
@@ -2292,7 +2320,7 @@ struct RealtimeServerEventResponseAudioTranscriptDoneBase {
 template <typename Derived>
 struct RealtimeServerEventResponseContentPartAddedBase {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     std::string response_id;
     std::string item_id;
     int output_index;
@@ -2303,7 +2331,7 @@ struct RealtimeServerEventResponseContentPartAddedBase {
 template <typename Derived>
 struct RealtimeServerEventResponseContentPartDoneBase {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     std::string response_id;
     std::string item_id;
     int output_index;
@@ -2312,21 +2340,23 @@ struct RealtimeServerEventResponseContentPartDoneBase {
 };
 
 template <typename Derived>
-struct RealtimeServerEventResponseCreatedBase : public RealtimeResponseBase<Derived> {
+struct RealtimeServerEventResponseCreatedBase {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
+    RealtimeResponse response;
 };
 
 template <typename Derived>
-struct RealtimeServerEventResponseDoneBase : public RealtimeResponseBase<Derived> {
+struct RealtimeServerEventResponseDoneBase {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
+    RealtimeResponse response;
 };
 
 template <typename Derived>
 struct RealtimeServerEventResponseFunctionCallArgumentsDeltaBase {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     std::string response_id;
     std::string item_id;
     int output_index;
@@ -2337,7 +2367,7 @@ struct RealtimeServerEventResponseFunctionCallArgumentsDeltaBase {
 template <typename Derived>
 struct RealtimeServerEventResponseFunctionCallArgumentsDoneBase {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     std::string response_id;
     std::string item_id;
     int output_index;
@@ -2346,25 +2376,27 @@ struct RealtimeServerEventResponseFunctionCallArgumentsDoneBase {
 };
 
 template <typename Derived>
-struct RealtimeServerEventResponseOutputItemAddedBase : public RealtimeConversationItemBase<Derived> {
+struct RealtimeServerEventResponseOutputItemAddedBase {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     std::string response_id;
     int output_index;
+    RealtimeConversationItem item;
 };
 
 template <typename Derived>
-struct RealtimeServerEventResponseOutputItemDoneBase : public RealtimeConversationItemBase<Derived> {
+struct RealtimeServerEventResponseOutputItemDoneBase {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     std::string response_id;
     int output_index;
+    RealtimeConversationItem item;
 };
 
 template <typename Derived>
 struct RealtimeServerEventResponseTextDeltaBase {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     std::string response_id;
     std::string item_id;
     int output_index;
@@ -2375,7 +2407,7 @@ struct RealtimeServerEventResponseTextDeltaBase {
 template <typename Derived>
 struct RealtimeServerEventResponseTextDoneBase {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     std::string response_id;
     std::string item_id;
     int output_index;
@@ -2389,9 +2421,9 @@ struct RealtimeSessionBase {
     UNKNOWN_TYPE modalities;
     UNKNOWN_TYPE model;
     std::string instructions;
-    std::string  // or generate an enum voice;
-    std::string  // or generate an enum input_audio_format;
-    std::string  // or generate an enum output_audio_format;
+    std::string  // or generated enum voice;
+    std::string  // or generated enum input_audio_format;
+    std::string  // or generated enum output_audio_format;
     UNKNOWN_TYPE input_audio_transcription;
     UNKNOWN_TYPE turn_detection;
     std::vector<UNKNOWN_TYPE> tools;
@@ -2401,15 +2433,17 @@ struct RealtimeSessionBase {
 };
 
 template <typename Derived>
-struct RealtimeServerEventSessionCreatedBase : public RealtimeSessionBase<Derived> {
+struct RealtimeServerEventSessionCreatedBase {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
+    RealtimeSession session;
 };
 
 template <typename Derived>
-struct RealtimeServerEventSessionUpdatedBase : public RealtimeSessionBase<Derived> {
+struct RealtimeServerEventSessionUpdatedBase {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
+    RealtimeSession session;
 };
 
 template <typename Derived>
@@ -2417,7 +2451,7 @@ struct RealtimeSessionCreateResponseBase {
     UNKNOWN_TYPE client_secret;
     UNKNOWN_TYPE modalities;
     std::string instructions;
-    std::string  // or generate an enum voice;
+    std::string  // or generated enum voice;
     std::string input_audio_format;
     std::string output_audio_format;
     UNKNOWN_TYPE input_audio_transcription;
@@ -2430,23 +2464,22 @@ struct RealtimeSessionCreateResponseBase {
 
 template <typename Derived>
 struct ResponseFormatJsonObjectBase {
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
 };
 
 template <typename Derived>
 struct ResponseFormatJsonSchemaBase {
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     UNKNOWN_TYPE json_schema;
 };
 
 template <typename Derived>
 struct ResponseFormatJsonSchemaSchemaBase {
-    // no direct properties
 };
 
 template <typename Derived>
 struct ResponseFormatTextBase {
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
 };
 
 template <typename Derived>
@@ -2457,13 +2490,13 @@ struct RunCompletionUsageBase {
 };
 
 template <typename Derived>
-struct RunObjectBase : public RunCompletionUsageBase<Derived>, public TruncationObjectBase<Derived>, public AssistantsApiToolChoiceOptionBase<Derived>, public ParallelToolCallsBase<Derived>, public AssistantsApiResponseFormatOptionBase<Derived> {
+struct RunObjectBase {
     std::string id;
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     int created_at;
     std::string thread_id;
     std::string assistant_id;
-    std::string  // or generate an enum status;
+    std::string  // or generated enum status;
     UNKNOWN_TYPE required_action;
     UNKNOWN_TYPE last_error;
     int expires_at;
@@ -2476,10 +2509,15 @@ struct RunObjectBase : public RunCompletionUsageBase<Derived>, public Truncation
     std::string instructions;
     std::vector<UNKNOWN_TYPE> tools;
     UNKNOWN_TYPE metadata;
+    RunCompletionUsage usage;
     double temperature;
     double top_p;
     int max_prompt_tokens;
     int max_completion_tokens;
+    TruncationObject truncation_strategy;
+    AssistantsApiToolChoiceOption tool_choice;
+    ParallelToolCalls parallel_tool_calls;
+    AssistantsApiResponseFormatOption response_format;
 };
 
 template <typename Derived>
@@ -2492,13 +2530,13 @@ struct RunStepCompletionUsageBase {
 template <typename Derived>
 struct RunStepDeltaObjectBase {
     std::string id;
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     UNKNOWN_TYPE delta;
 };
 
 template <typename Derived>
 struct RunStepDeltaStepDetailsMessageCreationObjectBase {
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     UNKNOWN_TYPE message_creation;
 };
 
@@ -2506,21 +2544,21 @@ template <typename Derived>
 struct RunStepDeltaStepDetailsToolCallsCodeObjectBase {
     int index;
     std::string id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     UNKNOWN_TYPE code_interpreter;
 };
 
 template <typename Derived>
 struct RunStepDeltaStepDetailsToolCallsCodeOutputImageObjectBase {
     int index;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     UNKNOWN_TYPE image;
 };
 
 template <typename Derived>
 struct RunStepDeltaStepDetailsToolCallsCodeOutputLogsObjectBase {
     int index;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     std::string logs;
 };
 
@@ -2528,7 +2566,7 @@ template <typename Derived>
 struct RunStepDeltaStepDetailsToolCallsFileSearchObjectBase {
     int index;
     std::string id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     UNKNOWN_TYPE file_search;
 };
 
@@ -2536,51 +2574,51 @@ template <typename Derived>
 struct RunStepDeltaStepDetailsToolCallsFunctionObjectBase {
     int index;
     std::string id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     UNKNOWN_TYPE function;
 };
 
 template <typename Derived>
 struct RunStepDeltaStepDetailsToolCallsObjectBase {
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     std::vector<UNKNOWN_TYPE> tool_calls;
 };
 
 template <typename Derived>
 struct RunStepDetailsMessageCreationObjectBase {
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     UNKNOWN_TYPE message_creation;
 };
 
 template <typename Derived>
 struct RunStepDetailsToolCallsCodeObjectBase {
     std::string id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     UNKNOWN_TYPE code_interpreter;
 };
 
 template <typename Derived>
 struct RunStepDetailsToolCallsCodeOutputImageObjectBase {
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     UNKNOWN_TYPE image;
 };
 
 template <typename Derived>
 struct RunStepDetailsToolCallsCodeOutputLogsObjectBase {
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     std::string logs;
 };
 
 template <typename Derived>
 struct RunStepDetailsToolCallsFileSearchObjectBase {
     std::string id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     UNKNOWN_TYPE file_search;
 };
 
 template <typename Derived>
 struct RunStepDetailsToolCallsFileSearchRankingOptionsObjectBase {
-    std::string  // or generate an enum ranker;
+    std::string  // or generated enum ranker;
     double score_threshold;
 };
 
@@ -2595,26 +2633,26 @@ struct RunStepDetailsToolCallsFileSearchResultObjectBase {
 template <typename Derived>
 struct RunStepDetailsToolCallsFunctionObjectBase {
     std::string id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     UNKNOWN_TYPE function;
 };
 
 template <typename Derived>
 struct RunStepDetailsToolCallsObjectBase {
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     std::vector<UNKNOWN_TYPE> tool_calls;
 };
 
 template <typename Derived>
-struct RunStepObjectBase : public RunStepCompletionUsageBase<Derived> {
+struct RunStepObjectBase {
     std::string id;
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     int created_at;
     std::string assistant_id;
     std::string thread_id;
     std::string run_id;
-    std::string  // or generate an enum type;
-    std::string  // or generate an enum status;
+    std::string  // or generated enum type;
+    std::string  // or generated enum status;
     UNKNOWN_TYPE step_details;
     UNKNOWN_TYPE last_error;
     int expired_at;
@@ -2622,22 +2660,21 @@ struct RunStepObjectBase : public RunStepCompletionUsageBase<Derived> {
     int failed_at;
     int completed_at;
     UNKNOWN_TYPE metadata;
+    RunStepCompletionUsage usage;
 };
 
 template <typename Derived>
 struct RunStepStreamEventBase {
-    // no direct properties
 };
 
 template <typename Derived>
 struct RunStreamEventBase {
-    // no direct properties
 };
 
 template <typename Derived>
 struct RunToolCallObjectBase {
     std::string id;
-    std::string  // or generate an enum type;
+    std::string  // or generated enum type;
     UNKNOWN_TYPE function;
 };
 
@@ -2648,13 +2685,15 @@ struct StaticChunkingStrategyBase {
 };
 
 template <typename Derived>
-struct StaticChunkingStrategyRequestParamBase : public StaticChunkingStrategyBase<Derived> {
-    std::string  // or generate an enum type;
+struct StaticChunkingStrategyRequestParamBase {
+    std::string  // or generated enum type;
+    StaticChunkingStrategy static;
 };
 
 template <typename Derived>
-struct StaticChunkingStrategyResponseParamBase : public StaticChunkingStrategyBase<Derived> {
-    std::string  // or generate an enum type;
+struct StaticChunkingStrategyResponseParamBase {
+    std::string  // or generated enum type;
+    StaticChunkingStrategy static;
 };
 
 template <typename Derived>
@@ -2666,7 +2705,7 @@ struct SubmitToolOutputsRunRequestBase {
 template <typename Derived>
 struct ThreadObjectBase {
     std::string id;
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     int created_at;
     UNKNOWN_TYPE tool_resources;
     UNKNOWN_TYPE metadata;
@@ -2674,7 +2713,6 @@ struct ThreadObjectBase {
 
 template <typename Derived>
 struct ThreadStreamEventBase {
-    // no direct properties
 };
 
 template <typename Derived>
@@ -2699,21 +2737,23 @@ struct TranscriptionWordBase {
 };
 
 template <typename Derived>
-struct UpdateVectorStoreRequestBase : public VectorStoreExpirationAfterBase<Derived> {
+struct UpdateVectorStoreRequestBase {
     std::string name;
+    VectorStoreExpirationAfter expires_after;
     UNKNOWN_TYPE metadata;
 };
 
 template <typename Derived>
-struct UploadBase : public OpenAIFileBase<Derived> {
+struct UploadBase {
     std::string id;
     int created_at;
     std::string filename;
     int bytes;
     std::string purpose;
-    std::string  // or generate an enum status;
+    std::string  // or generated enum status;
     int expires_at;
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
+    OpenAIFile file;
 };
 
 template <typename Derived>
@@ -2721,12 +2761,12 @@ struct UploadPartBase {
     std::string id;
     int created_at;
     std::string upload_id;
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
 };
 
 template <typename Derived>
 struct UsageAudioSpeechesResultBase {
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     int characters;
     int num_model_requests;
     std::string project_id;
@@ -2737,7 +2777,7 @@ struct UsageAudioSpeechesResultBase {
 
 template <typename Derived>
 struct UsageAudioTranscriptionsResultBase {
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     int seconds;
     int num_model_requests;
     std::string project_id;
@@ -2748,14 +2788,14 @@ struct UsageAudioTranscriptionsResultBase {
 
 template <typename Derived>
 struct UsageCodeInterpreterSessionsResultBase {
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     int sessions;
     std::string project_id;
 };
 
 template <typename Derived>
 struct UsageCompletionsResultBase {
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     int input_tokens;
     int input_cached_tokens;
     int output_tokens;
@@ -2771,7 +2811,7 @@ struct UsageCompletionsResultBase {
 
 template <typename Derived>
 struct UsageEmbeddingsResultBase {
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     int input_tokens;
     int num_model_requests;
     std::string project_id;
@@ -2782,7 +2822,7 @@ struct UsageEmbeddingsResultBase {
 
 template <typename Derived>
 struct UsageImagesResultBase {
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     int images;
     int num_model_requests;
     std::string source;
@@ -2795,7 +2835,7 @@ struct UsageImagesResultBase {
 
 template <typename Derived>
 struct UsageModerationsResultBase {
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     int input_tokens;
     int num_model_requests;
     std::string project_id;
@@ -2806,7 +2846,7 @@ struct UsageModerationsResultBase {
 
 template <typename Derived>
 struct UsageResponseBase {
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     std::vector<UsageTimeBucket> data;
     bool has_more;
     std::string next_page;
@@ -2814,7 +2854,7 @@ struct UsageResponseBase {
 
 template <typename Derived>
 struct UsageTimeBucketBase {
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     int start_time;
     int end_time;
     std::vector<UNKNOWN_TYPE> result;
@@ -2822,31 +2862,31 @@ struct UsageTimeBucketBase {
 
 template <typename Derived>
 struct UsageVectorStoresResultBase {
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     int usage_bytes;
     std::string project_id;
 };
 
 template <typename Derived>
 struct UserBase {
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     std::string id;
     std::string name;
     std::string email;
-    std::string  // or generate an enum role;
+    std::string  // or generated enum role;
     int added_at;
 };
 
 template <typename Derived>
 struct UserDeleteResponseBase {
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     std::string id;
     bool deleted;
 };
 
 template <typename Derived>
 struct UserListResponseBase {
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     std::vector<User> data;
     std::string first_id;
     std::string last_id;
@@ -2855,40 +2895,41 @@ struct UserListResponseBase {
 
 template <typename Derived>
 struct UserRoleUpdateRequestBase {
-    std::string  // or generate an enum role;
+    std::string  // or generated enum role;
 };
 
 template <typename Derived>
 struct VectorStoreFileBatchObjectBase {
     std::string id;
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     int created_at;
     std::string vector_store_id;
-    std::string  // or generate an enum status;
+    std::string  // or generated enum status;
     UNKNOWN_TYPE file_counts;
 };
 
 template <typename Derived>
 struct VectorStoreFileObjectBase {
     std::string id;
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     int usage_bytes;
     int created_at;
     std::string vector_store_id;
-    std::string  // or generate an enum status;
+    std::string  // or generated enum status;
     UNKNOWN_TYPE last_error;
     UNKNOWN_TYPE chunking_strategy;
 };
 
 template <typename Derived>
-struct VectorStoreObjectBase : public VectorStoreExpirationAfterBase<Derived> {
+struct VectorStoreObjectBase {
     std::string id;
-    std::string  // or generate an enum object;
+    std::string  // or generated enum object;
     int created_at;
     std::string name;
     int usage_bytes;
     UNKNOWN_TYPE file_counts;
-    std::string  // or generate an enum status;
+    std::string  // or generated enum status;
+    VectorStoreExpirationAfter expires_after;
     int expires_at;
     int last_active_at;
     UNKNOWN_TYPE metadata;
