@@ -3,7 +3,6 @@
 import sys
 import yaml
 
-# Map (type, format) -> C++ type for simple scalars
 BASIC_TYPE_MAP = {
     ('string', None): 'std::string',
     ('integer', None): 'int',
@@ -15,40 +14,28 @@ BASIC_TYPE_MAP = {
 
 class NormalStructGenerator:
     def __init__(self, doc):
-        """
-        doc: The parsed OpenAPI spec (a Python dict).
-        """
         self.doc = doc
         self.components = doc.get('components', {})
         self.schemas = self.components.get('schemas', {})
-        # Keep track of schemas we've generated so we don't do it multiple times
         self.generated = set()
-        # We'll store forward declarations and struct definitions separately
         self.forward_decls = []
         self.struct_defs = []
 
     def ref_to_name(self, ref_str):
-        """
-        Converts something like '#/components/schemas/Foo' -> 'Foo'
-        """
         return ref_str.split('/')[-1]
 
-    def get_cpp_type(self, prop_schema):
+    def get_cpp_type_and_comment(self, prop_schema):
         """
-        Returns a C++ type for this property, or UNKNOWN_TYPE if we can't map it.
-        We handle:
-          - $ref
-          - scalar types
-          - arrays
-          - 'object' (inline) -> UNKNOWN_TYPE by default
-          - 'enum' -> std::string (placeholder)
+        Return (cpp_type, comment).
+        The comment will be appended after the semicolon, e.g.:
+           <cpp_type> <prop_name>; // <comment>
         """
         if not isinstance(prop_schema, dict):
-            return "UNKNOWN_TYPE"
+            return ("UNKNOWN_TYPE", "")
 
-        # If there's a reference, we eventually want the struct name
+        # If $ref
         if '$ref' in prop_schema:
-            return self.ref_to_name(prop_schema['$ref'])
+            return (self.ref_to_name(prop_schema['$ref']), "")
 
         prop_type = prop_schema.get('type')
         prop_format = prop_schema.get('format')
@@ -56,42 +43,38 @@ class NormalStructGenerator:
         # arrays
         if prop_type == 'array':
             items = prop_schema.get('items', {})
-            elem_type = self.get_cpp_type(items)
-            return f"std::vector<{elem_type}>"
+            elem_type, elem_comment = self.get_cpp_type_and_comment(items)
+            # For simplicity, ignore element comment. Or you can incorporate it:
+            return (f"std::vector<{elem_type}>", elem_comment)
 
-        # object (inline) -> we do a fallback
+        # inline object
         if prop_type == 'object':
-            return "UNKNOWN_TYPE"
+            return ("UNKNOWN_TYPE", "")
 
         # enum
         if 'enum' in prop_schema:
-            # real code might parse out the enum values
-            return "std::string  // or generate an enum"
+            return ("std::string", "or generate an enum type")
 
-        # fallback to scalar mapping
-        return BASIC_TYPE_MAP.get((prop_type, prop_format), "UNKNOWN_TYPE")
+        # fallback scalar
+        mapped = BASIC_TYPE_MAP.get((prop_type, prop_format), None)
+        if mapped:
+            return (mapped, "")
+        else:
+            return ("UNKNOWN_TYPE", "")
 
     def generate_schema(self, schema_name):
-        """
-        Generate a forward declaration and a struct for the given schema.
-        - If the schema has references, we ensure those schemas are generated first.
-        - Then we produce a single struct with the discovered properties as members.
-        """
         if schema_name in self.generated:
-            return  # already processed
+            return
 
         schema = self.schemas.get(schema_name)
         self.generated.add(schema_name)
 
-        # If we don't have a real schema dict, just forward-declare
         if not schema or not isinstance(schema, dict):
             self.forward_decls.append(f"struct {schema_name};")
             return
 
-        # Forward declare
         self.forward_decls.append(f"struct {schema_name};")
 
-        # Collect the properties
         props = schema.get('properties', {})
         required = schema.get('required', [])
 
@@ -99,39 +82,38 @@ class NormalStructGenerator:
         struct_lines.append(f"struct {schema_name} {{")
 
         for prop_name, prop_schema in props.items():
-            # If $ref, we must generate the referenced schema first
+            # If referencing another schema
             if '$ref' in prop_schema:
                 ref_name = self.ref_to_name(prop_schema['$ref'])
                 self.generate_schema(ref_name)
 
-            cpp_type = self.get_cpp_type(prop_schema)
-            # If not in required, you might want to wrap in std::optional
+            cpp_type, comment = self.get_cpp_type_and_comment(prop_schema)
+
+            # Optionally do: if prop_name not in required => std::optional
             # if prop_name not in required:
             #     cpp_type = f"std::optional<{cpp_type}>"
 
-            struct_lines.append(f"    {cpp_type} {prop_name};")
+            # If there's a comment, we append it after the semicolon.
+            if comment:
+                struct_lines.append(f"    {cpp_type} {prop_name}; // {comment}")
+            else:
+                struct_lines.append(f"    {cpp_type} {prop_name};")
 
         struct_lines.append("};\n")
         self.struct_defs.append("\n".join(struct_lines))
 
     def generate_all(self):
-        """
-        Generate code for every schema in components.schemas.
-        """
         for name in sorted(self.schemas.keys()):
             self.generate_schema(name)
 
     def produce_code(self):
-        """
-        Produce the final combined C++ header as a string.
-        """
         lines = []
         lines.append("#pragma once")
         lines.append("#include <string>")
         lines.append("#include <vector>")
         lines.append("#include <optional>")
         lines.append("")
-        lines.append("// If the generator can't map a type, we use UNKNOWN_TYPE to force a compile error.")
+        lines.append('// If we can\'t map something, use UNKNOWN_TYPE => compile error.')
         lines.append('#define UNKNOWN_TYPE static_assert(false, "Unknown schema type encountered!");')
         lines.append("")
         lines.append("// Forward declarations:")

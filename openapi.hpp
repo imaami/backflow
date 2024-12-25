@@ -3,7 +3,7 @@
 #include <vector>
 #include <optional>
 
-// If the generator can't map a type, we use UNKNOWN_TYPE to force a compile error.
+// If we can't map something, use UNKNOWN_TYPE => compile error.
 #define UNKNOWN_TYPE static_assert(false, "Unknown schema type encountered!");
 
 // Forward declarations:
@@ -320,7 +320,7 @@ struct AssistantsApiResponseFormatOption {
 
 struct AssistantObject {
     std::string id;
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     int created_at;
     std::string name;
     std::string description;
@@ -338,16 +338,16 @@ struct AssistantStreamEvent {
 };
 
 struct AssistantToolsCode {
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
 };
 
 struct AssistantToolsFileSearch {
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     UNKNOWN_TYPE file_search;
 };
 
 struct AssistantToolsFileSearchTypeOnly {
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
 };
 
 struct FunctionParameters {
@@ -361,7 +361,7 @@ struct FunctionObject {
 };
 
 struct AssistantToolsFunction {
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     FunctionObject function;
 };
 
@@ -369,7 +369,7 @@ struct AssistantsApiToolChoiceOption {
 };
 
 struct AssistantsNamedToolChoice {
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     UNKNOWN_TYPE function;
 };
 
@@ -395,13 +395,13 @@ struct AuditLogActorServiceAccount {
 
 struct AuditLogActorApiKey {
     std::string id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     AuditLogActorUser user;
     AuditLogActorServiceAccount service_account;
 };
 
 struct AuditLogActor {
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     AuditLogActorSession session;
     AuditLogActorApiKey api_key;
 };
@@ -435,17 +435,17 @@ struct AuditLog {
 };
 
 struct AutoChunkingStrategyRequestParam {
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
 };
 
 struct Batch {
     std::string id;
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     std::string endpoint;
     UNKNOWN_TYPE errors;
     std::string input_file_id;
     std::string completion_window;
-    std::string  // or generate an enum status;
+    std::string status; // or generate an enum type
     std::string output_file_id;
     std::string error_file_id;
     int created_at;
@@ -463,7 +463,7 @@ struct Batch {
 
 struct BatchRequestInput {
     std::string custom_id;
-    std::string  // or generate an enum method;
+    std::string method; // or generate an enum type
     std::string url;
 };
 
@@ -489,14 +489,14 @@ struct ChatCompletionFunctions {
 
 struct ChatCompletionMessageToolCall {
     std::string id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     UNKNOWN_TYPE function;
 };
 
 struct ChatCompletionMessageToolCallChunk {
     int index;
     std::string id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     UNKNOWN_TYPE function;
 };
 
@@ -507,14 +507,14 @@ struct ChatCompletionModalities {
 };
 
 struct ChatCompletionNamedToolChoice {
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     UNKNOWN_TYPE function;
 };
 
 struct ChatCompletionRequestAssistantMessage {
     UNKNOWN_TYPE content;
     std::string refusal;
-    std::string  // or generate an enum role;
+    std::string role; // or generate an enum type
     std::string name;
     UNKNOWN_TYPE audio;
     ChatCompletionMessageToolCalls tool_calls;
@@ -526,12 +526,12 @@ struct ChatCompletionRequestAssistantMessageContentPart {
 
 struct ChatCompletionRequestDeveloperMessage {
     UNKNOWN_TYPE content;
-    std::string  // or generate an enum role;
+    std::string role; // or generate an enum type
     std::string name;
 };
 
 struct ChatCompletionRequestFunctionMessage {
-    std::string  // or generate an enum role;
+    std::string role; // or generate an enum type
     std::string content;
     std::string name;
 };
@@ -540,28 +540,28 @@ struct ChatCompletionRequestMessage {
 };
 
 struct ChatCompletionRequestMessageContentPartAudio {
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     UNKNOWN_TYPE input_audio;
 };
 
 struct ChatCompletionRequestMessageContentPartImage {
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     UNKNOWN_TYPE image_url;
 };
 
 struct ChatCompletionRequestMessageContentPartRefusal {
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     std::string refusal;
 };
 
 struct ChatCompletionRequestMessageContentPartText {
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     std::string text;
 };
 
 struct ChatCompletionRequestSystemMessage {
     UNKNOWN_TYPE content;
-    std::string  // or generate an enum role;
+    std::string role; // or generate an enum type
     std::string name;
 };
 
@@ -569,7 +569,7 @@ struct ChatCompletionRequestSystemMessageContentPart {
 };
 
 struct ChatCompletionRequestToolMessage {
-    std::string  // or generate an enum role;
+    std::string role; // or generate an enum type
     UNKNOWN_TYPE content;
     std::string tool_call_id;
 };
@@ -579,7 +579,7 @@ struct ChatCompletionRequestToolMessageContentPart {
 
 struct ChatCompletionRequestUserMessage {
     UNKNOWN_TYPE content;
-    std::string  // or generate an enum role;
+    std::string role; // or generate an enum type
     std::string name;
 };
 
@@ -590,7 +590,7 @@ struct ChatCompletionResponseMessage {
     std::string content;
     std::string refusal;
     ChatCompletionMessageToolCalls tool_calls;
-    std::string  // or generate an enum role;
+    std::string role; // or generate an enum type
     UNKNOWN_TYPE function_call;
     UNKNOWN_TYPE audio;
 };
@@ -606,7 +606,7 @@ struct ChatCompletionStreamResponseDelta {
     std::string content;
     UNKNOWN_TYPE function_call;
     std::vector<ChatCompletionMessageToolCallChunk> tool_calls;
-    std::string  // or generate an enum role;
+    std::string role; // or generate an enum type
     std::string refusal;
 };
 
@@ -618,7 +618,7 @@ struct ChatCompletionTokenLogprob {
 };
 
 struct ChatCompletionTool {
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     FunctionObject function;
 };
 
@@ -642,7 +642,7 @@ struct CompletionUsage {
 };
 
 struct CostsResult {
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     UNKNOWN_TYPE amount;
     std::string line_item;
     std::string project_id;
@@ -667,7 +667,7 @@ struct CreateChatCompletionFunctionResponse {
     int created;
     std::string model;
     std::string system_fingerprint;
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     CompletionUsage usage;
 };
 
@@ -681,7 +681,7 @@ struct CreateChatCompletionRequest {
     std::vector<ChatCompletionRequestMessage> messages;
     UNKNOWN_TYPE model;
     bool store;
-    std::string  // or generate an enum reasoning_effort;
+    std::string reasoning_effort; // or generate an enum type
     UNKNOWN_TYPE metadata;
     double frequency_penalty;
     UNKNOWN_TYPE logit_bias;
@@ -696,7 +696,7 @@ struct CreateChatCompletionRequest {
     double presence_penalty;
     UNKNOWN_TYPE response_format;
     int seed;
-    std::string  // or generate an enum service_tier;
+    std::string service_tier; // or generate an enum type
     UNKNOWN_TYPE stop;
     bool stream;
     ChatCompletionStreamOptions stream_options;
@@ -715,9 +715,9 @@ struct CreateChatCompletionResponse {
     std::vector<UNKNOWN_TYPE> choices;
     int created;
     std::string model;
-    std::string  // or generate an enum service_tier;
+    std::string service_tier; // or generate an enum type
     std::string system_fingerprint;
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     CompletionUsage usage;
 };
 
@@ -726,9 +726,9 @@ struct CreateChatCompletionStreamResponse {
     std::vector<UNKNOWN_TYPE> choices;
     int created;
     std::string model;
-    std::string  // or generate an enum service_tier;
+    std::string service_tier; // or generate an enum type
     std::string system_fingerprint;
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     UNKNOWN_TYPE usage;
 };
 
@@ -759,14 +759,14 @@ struct CreateCompletionResponse {
     int created;
     std::string model;
     std::string system_fingerprint;
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     CompletionUsage usage;
 };
 
 struct CreateEmbeddingRequest {
     UNKNOWN_TYPE input;
     UNKNOWN_TYPE model;
-    std::string  // or generate an enum encoding_format;
+    std::string encoding_format; // or generate an enum type
     int dimensions;
     std::string user;
 };
@@ -774,13 +774,13 @@ struct CreateEmbeddingRequest {
 struct CreateEmbeddingResponse {
     std::vector<Embedding> data;
     std::string model;
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     UNKNOWN_TYPE usage;
 };
 
 struct CreateFileRequest {
     UNKNOWN_TYPE file;
-    std::string  // or generate an enum purpose;
+    std::string purpose; // or generate an enum type
 };
 
 struct FineTuneSupervisedMethod {
@@ -792,7 +792,7 @@ struct FineTuneDPOMethod {
 };
 
 struct FineTuneMethod {
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     FineTuneSupervisedMethod supervised;
     FineTuneDPOMethod dpo;
 };
@@ -814,8 +814,8 @@ struct CreateImageEditRequest {
     UNKNOWN_TYPE mask;
     UNKNOWN_TYPE model;
     int n;
-    std::string  // or generate an enum size;
-    std::string  // or generate an enum response_format;
+    std::string size; // or generate an enum type
+    std::string response_format; // or generate an enum type
     std::string user;
 };
 
@@ -823,10 +823,10 @@ struct CreateImageRequest {
     std::string prompt;
     UNKNOWN_TYPE model;
     int n;
-    std::string  // or generate an enum quality;
-    std::string  // or generate an enum response_format;
-    std::string  // or generate an enum size;
-    std::string  // or generate an enum style;
+    std::string quality; // or generate an enum type
+    std::string response_format; // or generate an enum type
+    std::string size; // or generate an enum type
+    std::string style; // or generate an enum type
     std::string user;
 };
 
@@ -834,13 +834,13 @@ struct CreateImageVariationRequest {
     UNKNOWN_TYPE image;
     UNKNOWN_TYPE model;
     int n;
-    std::string  // or generate an enum response_format;
-    std::string  // or generate an enum size;
+    std::string response_format; // or generate an enum type
+    std::string size; // or generate an enum type
     std::string user;
 };
 
 struct CreateMessageRequest {
-    std::string  // or generate an enum role;
+    std::string role; // or generate an enum type
     UNKNOWN_TYPE content;
     std::vector<UNKNOWN_TYPE> attachments;
     UNKNOWN_TYPE metadata;
@@ -858,7 +858,7 @@ struct CreateModerationResponse {
 };
 
 struct TruncationObject {
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     int last_messages;
 };
 
@@ -884,8 +884,8 @@ struct CreateRunRequest {
 struct CreateSpeechRequest {
     UNKNOWN_TYPE model;
     std::string input;
-    std::string  // or generate an enum voice;
-    std::string  // or generate an enum response_format;
+    std::string voice; // or generate an enum type
+    std::string response_format; // or generate an enum type
     double speed;
 };
 
@@ -921,7 +921,7 @@ struct CreateTranscriptionRequest {
     std::string prompt;
     AudioResponseFormat response_format;
     double temperature;
-    std::vector<std::string  // or generate an enum> timestamp_granularities[];
+    std::vector<std::string> timestamp_granularities[]; // or generate an enum type
 };
 
 struct CreateTranscriptionResponseJson {
@@ -957,7 +957,7 @@ struct CreateTranslationResponseVerboseJson {
 
 struct CreateUploadRequest {
     std::string filename;
-    std::string  // or generate an enum purpose;
+    std::string purpose; // or generate an enum type
     int bytes;
     std::string mime_type;
 };
@@ -973,7 +973,7 @@ struct CreateVectorStoreFileRequest {
 };
 
 struct VectorStoreExpirationAfter {
-    std::string  // or generate an enum anchor;
+    std::string anchor; // or generate an enum type
     int days;
 };
 
@@ -993,19 +993,19 @@ struct DefaultProjectErrorResponse {
 struct DeleteAssistantResponse {
     std::string id;
     bool deleted;
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
 };
 
 struct DeleteFileResponse {
     std::string id;
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     bool deleted;
 };
 
 struct DeleteMessageResponse {
     std::string id;
     bool deleted;
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
 };
 
 struct DeleteModelResponse {
@@ -1017,30 +1017,30 @@ struct DeleteModelResponse {
 struct DeleteThreadResponse {
     std::string id;
     bool deleted;
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
 };
 
 struct DeleteVectorStoreFileResponse {
     std::string id;
     bool deleted;
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
 };
 
 struct DeleteVectorStoreResponse {
     std::string id;
     bool deleted;
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
 };
 
 struct DoneEvent {
-    std::string  // or generate an enum event;
-    std::string  // or generate an enum data;
+    std::string event; // or generate an enum type
+    std::string data; // or generate an enum type
 };
 
 struct Embedding {
     int index;
     std::vector<double> embedding;
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
 };
 
 struct Error {
@@ -1051,7 +1051,7 @@ struct Error {
 };
 
 struct ErrorEvent {
-    std::string  // or generate an enum event;
+    std::string event; // or generate an enum type
     Error data;
 };
 
@@ -1060,7 +1060,7 @@ struct ErrorResponse {
 };
 
 struct FileSearchRankingOptions {
-    std::string  // or generate an enum ranker;
+    std::string ranker; // or generate an enum type
     double score_threshold;
 };
 
@@ -1086,7 +1086,7 @@ struct FineTunePreferenceRequestInput {
 };
 
 struct FineTuningIntegration {
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     UNKNOWN_TYPE wandb;
 };
 
@@ -1098,10 +1098,10 @@ struct FineTuningJob {
     int finished_at;
     UNKNOWN_TYPE hyperparameters;
     std::string model;
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     std::string organization_id;
     std::vector<std::string> result_files;
-    std::string  // or generate an enum status;
+    std::string status; // or generate an enum type
     int trained_tokens;
     std::string training_file;
     std::string validation_file;
@@ -1118,16 +1118,16 @@ struct FineTuningJobCheckpoint {
     int step_number;
     UNKNOWN_TYPE metrics;
     std::string fine_tuning_job_id;
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
 };
 
 struct FineTuningJobEvent {
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     std::string id;
     int created_at;
-    std::string  // or generate an enum level;
+    std::string level; // or generate an enum type
     std::string message;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     UNKNOWN_TYPE data;
 };
 
@@ -1143,11 +1143,11 @@ struct ImagesResponse {
 };
 
 struct Invite {
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     std::string id;
     std::string email;
-    std::string  // or generate an enum role;
-    std::string  // or generate an enum status;
+    std::string role; // or generate an enum type
+    std::string status; // or generate an enum type
     int invited_at;
     int expires_at;
     int accepted_at;
@@ -1155,13 +1155,13 @@ struct Invite {
 };
 
 struct InviteDeleteResponse {
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     std::string id;
     bool deleted;
 };
 
 struct InviteListResponse {
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     std::vector<Invite> data;
     std::string first_id;
     std::string last_id;
@@ -1170,7 +1170,7 @@ struct InviteListResponse {
 
 struct InviteRequest {
     std::string email;
-    std::string  // or generate an enum role;
+    std::string role; // or generate an enum type
     std::vector<UNKNOWN_TYPE> projects;
 };
 
@@ -1183,7 +1183,7 @@ struct ListAssistantsResponse {
 };
 
 struct ListAuditLogsResponse {
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     std::vector<AuditLog> data;
     std::string first_id;
     std::string last_id;
@@ -1195,7 +1195,7 @@ struct ListBatchesResponse {
     std::string first_id;
     std::string last_id;
     bool has_more;
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
 };
 
 struct ListFilesResponse {
@@ -1208,7 +1208,7 @@ struct ListFilesResponse {
 
 struct ListFineTuningJobCheckpointsResponse {
     std::vector<FineTuningJobCheckpoint> data;
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     std::string first_id;
     std::string last_id;
     bool has_more;
@@ -1216,7 +1216,7 @@ struct ListFineTuningJobCheckpointsResponse {
 
 struct ListFineTuningJobEventsResponse {
     std::vector<FineTuningJobEvent> data;
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
 };
 
 struct ListMessagesResponse {
@@ -1228,14 +1228,14 @@ struct ListMessagesResponse {
 };
 
 struct ListModelsResponse {
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     std::vector<Model> data;
 };
 
 struct ListPaginatedFineTuningJobsResponse {
     std::vector<FineTuningJob> data;
     bool has_more;
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
 };
 
 struct ListRunStepsResponse {
@@ -1279,22 +1279,22 @@ struct ListVectorStoresResponse {
 };
 
 struct MessageContentImageFileObject {
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     UNKNOWN_TYPE image_file;
 };
 
 struct MessageContentImageUrlObject {
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     UNKNOWN_TYPE image_url;
 };
 
 struct MessageContentRefusalObject {
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     std::string refusal;
 };
 
 struct MessageContentTextAnnotationsFileCitationObject {
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     std::string text;
     UNKNOWN_TYPE file_citation;
     int start_index;
@@ -1302,7 +1302,7 @@ struct MessageContentTextAnnotationsFileCitationObject {
 };
 
 struct MessageContentTextAnnotationsFilePathObject {
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     std::string text;
     UNKNOWN_TYPE file_path;
     int start_index;
@@ -1310,31 +1310,31 @@ struct MessageContentTextAnnotationsFilePathObject {
 };
 
 struct MessageContentTextObject {
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     UNKNOWN_TYPE text;
 };
 
 struct MessageDeltaContentImageFileObject {
     int index;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     UNKNOWN_TYPE image_file;
 };
 
 struct MessageDeltaContentImageUrlObject {
     int index;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     UNKNOWN_TYPE image_url;
 };
 
 struct MessageDeltaContentRefusalObject {
     int index;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     std::string refusal;
 };
 
 struct MessageDeltaContentTextAnnotationsFileCitationObject {
     int index;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     std::string text;
     UNKNOWN_TYPE file_citation;
     int start_index;
@@ -1343,7 +1343,7 @@ struct MessageDeltaContentTextAnnotationsFileCitationObject {
 
 struct MessageDeltaContentTextAnnotationsFilePathObject {
     int index;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     std::string text;
     UNKNOWN_TYPE file_path;
     int start_index;
@@ -1352,26 +1352,26 @@ struct MessageDeltaContentTextAnnotationsFilePathObject {
 
 struct MessageDeltaContentTextObject {
     int index;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     UNKNOWN_TYPE text;
 };
 
 struct MessageDeltaObject {
     std::string id;
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     UNKNOWN_TYPE delta;
 };
 
 struct MessageObject {
     std::string id;
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     int created_at;
     std::string thread_id;
-    std::string  // or generate an enum status;
+    std::string status; // or generate an enum type
     UNKNOWN_TYPE incomplete_details;
     int completed_at;
     int incomplete_at;
-    std::string  // or generate an enum role;
+    std::string role; // or generate an enum type
     std::vector<UNKNOWN_TYPE> content;
     std::string assistant_id;
     std::string run_id;
@@ -1380,7 +1380,7 @@ struct MessageObject {
 };
 
 struct MessageRequestContentTextObject {
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     std::string text;
 };
 
@@ -1390,7 +1390,7 @@ struct MessageStreamEvent {
 struct Model {
     std::string id;
     int created;
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     std::string owned_by;
 };
 
@@ -1425,32 +1425,32 @@ struct OpenAIFile {
     int bytes;
     int created_at;
     std::string filename;
-    std::string  // or generate an enum object;
-    std::string  // or generate an enum purpose;
-    std::string  // or generate an enum status;
+    std::string object; // or generate an enum type
+    std::string purpose; // or generate an enum type
+    std::string status; // or generate an enum type
     std::string status_details;
 };
 
 struct OtherChunkingStrategyResponseParam {
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
 };
 
 struct PredictionContent {
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     UNKNOWN_TYPE content;
 };
 
 struct Project {
     std::string id;
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     std::string name;
     int created_at;
     int archived_at;
-    std::string  // or generate an enum status;
+    std::string status; // or generate an enum type
 };
 
 struct ProjectApiKey {
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     std::string redacted_value;
     std::string name;
     int created_at;
@@ -1459,13 +1459,13 @@ struct ProjectApiKey {
 };
 
 struct ProjectApiKeyDeleteResponse {
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     std::string id;
     bool deleted;
 };
 
 struct ProjectApiKeyListResponse {
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     std::vector<ProjectApiKey> data;
     std::string first_id;
     std::string last_id;
@@ -1477,7 +1477,7 @@ struct ProjectCreateRequest {
 };
 
 struct ProjectListResponse {
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     std::vector<Project> data;
     std::string first_id;
     std::string last_id;
@@ -1485,7 +1485,7 @@ struct ProjectListResponse {
 };
 
 struct ProjectRateLimit {
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     std::string id;
     std::string model;
     int max_requests_per_1_minute;
@@ -1497,7 +1497,7 @@ struct ProjectRateLimit {
 };
 
 struct ProjectRateLimitListResponse {
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     std::vector<ProjectRateLimit> data;
     std::string first_id;
     std::string last_id;
@@ -1514,15 +1514,15 @@ struct ProjectRateLimitUpdateRequest {
 };
 
 struct ProjectServiceAccount {
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     std::string id;
     std::string name;
-    std::string  // or generate an enum role;
+    std::string role; // or generate an enum type
     int created_at;
 };
 
 struct ProjectServiceAccountApiKey {
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     std::string value;
     std::string name;
     int created_at;
@@ -1534,22 +1534,22 @@ struct ProjectServiceAccountCreateRequest {
 };
 
 struct ProjectServiceAccountCreateResponse {
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     std::string id;
     std::string name;
-    std::string  // or generate an enum role;
+    std::string role; // or generate an enum type
     int created_at;
     ProjectServiceAccountApiKey api_key;
 };
 
 struct ProjectServiceAccountDeleteResponse {
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     std::string id;
     bool deleted;
 };
 
 struct ProjectServiceAccountListResponse {
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     std::vector<ProjectServiceAccount> data;
     std::string first_id;
     std::string last_id;
@@ -1561,21 +1561,21 @@ struct ProjectUpdateRequest {
 };
 
 struct ProjectUser {
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     std::string id;
     std::string name;
     std::string email;
-    std::string  // or generate an enum role;
+    std::string role; // or generate an enum type
     int added_at;
 };
 
 struct ProjectUserCreateRequest {
     std::string user_id;
-    std::string  // or generate an enum role;
+    std::string role; // or generate an enum type
 };
 
 struct ProjectUserDeleteResponse {
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     std::string id;
     bool deleted;
 };
@@ -1589,15 +1589,15 @@ struct ProjectUserListResponse {
 };
 
 struct ProjectUserUpdateRequest {
-    std::string  // or generate an enum role;
+    std::string role; // or generate an enum type
 };
 
 struct RealtimeConversationItem {
     std::string id;
-    std::string  // or generate an enum type;
-    std::string  // or generate an enum object;
-    std::string  // or generate an enum status;
-    std::string  // or generate an enum role;
+    std::string type; // or generate an enum type
+    std::string object; // or generate an enum type
+    std::string status; // or generate an enum type
+    std::string role; // or generate an enum type
     std::vector<UNKNOWN_TYPE> content;
     std::string call_id;
     std::string name;
@@ -1607,20 +1607,20 @@ struct RealtimeConversationItem {
 
 struct RealtimeClientEventConversationItemCreate {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     std::string previous_item_id;
     RealtimeConversationItem item;
 };
 
 struct RealtimeClientEventConversationItemDelete {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     std::string item_id;
 };
 
 struct RealtimeClientEventConversationItemTruncate {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     std::string item_id;
     int content_index;
     int audio_end_ms;
@@ -1628,31 +1628,31 @@ struct RealtimeClientEventConversationItemTruncate {
 
 struct RealtimeClientEventInputAudioBufferAppend {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     std::string audio;
 };
 
 struct RealtimeClientEventInputAudioBufferClear {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
 };
 
 struct RealtimeClientEventInputAudioBufferCommit {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
 };
 
 struct RealtimeClientEventResponseCancel {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     std::string response_id;
 };
 
 struct RealtimeResponseCreateParams {
-    std::vector<std::string  // or generate an enum> modalities;
+    std::vector<std::string> modalities; // or generate an enum type
     std::string instructions;
-    std::string  // or generate an enum voice;
-    std::string  // or generate an enum output_audio_format;
+    std::string voice; // or generate an enum type
+    std::string output_audio_format; // or generate an enum type
     std::vector<UNKNOWN_TYPE> tools;
     std::string tool_choice;
     double temperature;
@@ -1664,17 +1664,17 @@ struct RealtimeResponseCreateParams {
 
 struct RealtimeClientEventResponseCreate {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     RealtimeResponseCreateParams response;
 };
 
 struct RealtimeSessionCreateRequest {
     UNKNOWN_TYPE modalities;
-    std::string  // or generate an enum model;
+    std::string model; // or generate an enum type
     std::string instructions;
-    std::string  // or generate an enum voice;
-    std::string  // or generate an enum input_audio_format;
-    std::string  // or generate an enum output_audio_format;
+    std::string voice; // or generate an enum type
+    std::string input_audio_format; // or generate an enum type
+    std::string output_audio_format; // or generate an enum type
     UNKNOWN_TYPE input_audio_transcription;
     UNKNOWN_TYPE turn_detection;
     std::vector<UNKNOWN_TYPE> tools;
@@ -1685,14 +1685,14 @@ struct RealtimeSessionCreateRequest {
 
 struct RealtimeClientEventSessionUpdate {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     RealtimeSessionCreateRequest session;
 };
 
 struct RealtimeResponse {
     std::string id;
-    std::string  // or generate an enum object;
-    std::string  // or generate an enum status;
+    std::string object; // or generate an enum type
+    std::string status; // or generate an enum type
     UNKNOWN_TYPE status_details;
     std::vector<RealtimeConversationItem> output;
     UNKNOWN_TYPE metadata;
@@ -1701,26 +1701,26 @@ struct RealtimeResponse {
 
 struct RealtimeServerEventConversationCreated {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     UNKNOWN_TYPE conversation;
 };
 
 struct RealtimeServerEventConversationItemCreated {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     std::string previous_item_id;
     RealtimeConversationItem item;
 };
 
 struct RealtimeServerEventConversationItemDeleted {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     std::string item_id;
 };
 
 struct RealtimeServerEventConversationItemInputAudioTranscriptionCompleted {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     std::string item_id;
     int content_index;
     std::string transcript;
@@ -1728,7 +1728,7 @@ struct RealtimeServerEventConversationItemInputAudioTranscriptionCompleted {
 
 struct RealtimeServerEventConversationItemInputAudioTranscriptionFailed {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     std::string item_id;
     int content_index;
     UNKNOWN_TYPE error;
@@ -1736,7 +1736,7 @@ struct RealtimeServerEventConversationItemInputAudioTranscriptionFailed {
 
 struct RealtimeServerEventConversationItemTruncated {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     std::string item_id;
     int content_index;
     int audio_end_ms;
@@ -1744,45 +1744,45 @@ struct RealtimeServerEventConversationItemTruncated {
 
 struct RealtimeServerEventError {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     UNKNOWN_TYPE error;
 };
 
 struct RealtimeServerEventInputAudioBufferCleared {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
 };
 
 struct RealtimeServerEventInputAudioBufferCommitted {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     std::string previous_item_id;
     std::string item_id;
 };
 
 struct RealtimeServerEventInputAudioBufferSpeechStarted {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     int audio_start_ms;
     std::string item_id;
 };
 
 struct RealtimeServerEventInputAudioBufferSpeechStopped {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     int audio_end_ms;
     std::string item_id;
 };
 
 struct RealtimeServerEventRateLimitsUpdated {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     std::vector<UNKNOWN_TYPE> rate_limits;
 };
 
 struct RealtimeServerEventResponseAudioDelta {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     std::string response_id;
     std::string item_id;
     int output_index;
@@ -1792,7 +1792,7 @@ struct RealtimeServerEventResponseAudioDelta {
 
 struct RealtimeServerEventResponseAudioDone {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     std::string response_id;
     std::string item_id;
     int output_index;
@@ -1801,7 +1801,7 @@ struct RealtimeServerEventResponseAudioDone {
 
 struct RealtimeServerEventResponseAudioTranscriptDelta {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     std::string response_id;
     std::string item_id;
     int output_index;
@@ -1811,7 +1811,7 @@ struct RealtimeServerEventResponseAudioTranscriptDelta {
 
 struct RealtimeServerEventResponseAudioTranscriptDone {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     std::string response_id;
     std::string item_id;
     int output_index;
@@ -1821,7 +1821,7 @@ struct RealtimeServerEventResponseAudioTranscriptDone {
 
 struct RealtimeServerEventResponseContentPartAdded {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     std::string response_id;
     std::string item_id;
     int output_index;
@@ -1831,7 +1831,7 @@ struct RealtimeServerEventResponseContentPartAdded {
 
 struct RealtimeServerEventResponseContentPartDone {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     std::string response_id;
     std::string item_id;
     int output_index;
@@ -1841,19 +1841,19 @@ struct RealtimeServerEventResponseContentPartDone {
 
 struct RealtimeServerEventResponseCreated {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     RealtimeResponse response;
 };
 
 struct RealtimeServerEventResponseDone {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     RealtimeResponse response;
 };
 
 struct RealtimeServerEventResponseFunctionCallArgumentsDelta {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     std::string response_id;
     std::string item_id;
     int output_index;
@@ -1863,7 +1863,7 @@ struct RealtimeServerEventResponseFunctionCallArgumentsDelta {
 
 struct RealtimeServerEventResponseFunctionCallArgumentsDone {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     std::string response_id;
     std::string item_id;
     int output_index;
@@ -1873,7 +1873,7 @@ struct RealtimeServerEventResponseFunctionCallArgumentsDone {
 
 struct RealtimeServerEventResponseOutputItemAdded {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     std::string response_id;
     int output_index;
     RealtimeConversationItem item;
@@ -1881,7 +1881,7 @@ struct RealtimeServerEventResponseOutputItemAdded {
 
 struct RealtimeServerEventResponseOutputItemDone {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     std::string response_id;
     int output_index;
     RealtimeConversationItem item;
@@ -1889,7 +1889,7 @@ struct RealtimeServerEventResponseOutputItemDone {
 
 struct RealtimeServerEventResponseTextDelta {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     std::string response_id;
     std::string item_id;
     int output_index;
@@ -1899,7 +1899,7 @@ struct RealtimeServerEventResponseTextDelta {
 
 struct RealtimeServerEventResponseTextDone {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     std::string response_id;
     std::string item_id;
     int output_index;
@@ -1912,9 +1912,9 @@ struct RealtimeSession {
     UNKNOWN_TYPE modalities;
     UNKNOWN_TYPE model;
     std::string instructions;
-    std::string  // or generate an enum voice;
-    std::string  // or generate an enum input_audio_format;
-    std::string  // or generate an enum output_audio_format;
+    std::string voice; // or generate an enum type
+    std::string input_audio_format; // or generate an enum type
+    std::string output_audio_format; // or generate an enum type
     UNKNOWN_TYPE input_audio_transcription;
     UNKNOWN_TYPE turn_detection;
     std::vector<UNKNOWN_TYPE> tools;
@@ -1925,13 +1925,13 @@ struct RealtimeSession {
 
 struct RealtimeServerEventSessionCreated {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     RealtimeSession session;
 };
 
 struct RealtimeServerEventSessionUpdated {
     std::string event_id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     RealtimeSession session;
 };
 
@@ -1939,7 +1939,7 @@ struct RealtimeSessionCreateResponse {
     UNKNOWN_TYPE client_secret;
     UNKNOWN_TYPE modalities;
     std::string instructions;
-    std::string  // or generate an enum voice;
+    std::string voice; // or generate an enum type
     std::string input_audio_format;
     std::string output_audio_format;
     UNKNOWN_TYPE input_audio_transcription;
@@ -1951,11 +1951,11 @@ struct RealtimeSessionCreateResponse {
 };
 
 struct ResponseFormatJsonObject {
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
 };
 
 struct ResponseFormatJsonSchema {
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     UNKNOWN_TYPE json_schema;
 };
 
@@ -1963,7 +1963,7 @@ struct ResponseFormatJsonSchemaSchema {
 };
 
 struct ResponseFormatText {
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
 };
 
 struct RunCompletionUsage {
@@ -1974,11 +1974,11 @@ struct RunCompletionUsage {
 
 struct RunObject {
     std::string id;
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     int created_at;
     std::string thread_id;
     std::string assistant_id;
-    std::string  // or generate an enum status;
+    std::string status; // or generate an enum type
     UNKNOWN_TYPE required_action;
     UNKNOWN_TYPE last_error;
     int expires_at;
@@ -2010,82 +2010,82 @@ struct RunStepCompletionUsage {
 
 struct RunStepDeltaObject {
     std::string id;
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     UNKNOWN_TYPE delta;
 };
 
 struct RunStepDeltaStepDetailsMessageCreationObject {
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     UNKNOWN_TYPE message_creation;
 };
 
 struct RunStepDeltaStepDetailsToolCallsCodeObject {
     int index;
     std::string id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     UNKNOWN_TYPE code_interpreter;
 };
 
 struct RunStepDeltaStepDetailsToolCallsCodeOutputImageObject {
     int index;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     UNKNOWN_TYPE image;
 };
 
 struct RunStepDeltaStepDetailsToolCallsCodeOutputLogsObject {
     int index;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     std::string logs;
 };
 
 struct RunStepDeltaStepDetailsToolCallsFileSearchObject {
     int index;
     std::string id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     UNKNOWN_TYPE file_search;
 };
 
 struct RunStepDeltaStepDetailsToolCallsFunctionObject {
     int index;
     std::string id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     UNKNOWN_TYPE function;
 };
 
 struct RunStepDeltaStepDetailsToolCallsObject {
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     std::vector<UNKNOWN_TYPE> tool_calls;
 };
 
 struct RunStepDetailsMessageCreationObject {
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     UNKNOWN_TYPE message_creation;
 };
 
 struct RunStepDetailsToolCallsCodeObject {
     std::string id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     UNKNOWN_TYPE code_interpreter;
 };
 
 struct RunStepDetailsToolCallsCodeOutputImageObject {
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     UNKNOWN_TYPE image;
 };
 
 struct RunStepDetailsToolCallsCodeOutputLogsObject {
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     std::string logs;
 };
 
 struct RunStepDetailsToolCallsFileSearchObject {
     std::string id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     UNKNOWN_TYPE file_search;
 };
 
 struct RunStepDetailsToolCallsFileSearchRankingOptionsObject {
-    std::string  // or generate an enum ranker;
+    std::string ranker; // or generate an enum type
     double score_threshold;
 };
 
@@ -2098,24 +2098,24 @@ struct RunStepDetailsToolCallsFileSearchResultObject {
 
 struct RunStepDetailsToolCallsFunctionObject {
     std::string id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     UNKNOWN_TYPE function;
 };
 
 struct RunStepDetailsToolCallsObject {
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     std::vector<UNKNOWN_TYPE> tool_calls;
 };
 
 struct RunStepObject {
     std::string id;
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     int created_at;
     std::string assistant_id;
     std::string thread_id;
     std::string run_id;
-    std::string  // or generate an enum type;
-    std::string  // or generate an enum status;
+    std::string type; // or generate an enum type
+    std::string status; // or generate an enum type
     UNKNOWN_TYPE step_details;
     UNKNOWN_TYPE last_error;
     int expired_at;
@@ -2134,7 +2134,7 @@ struct RunStreamEvent {
 
 struct RunToolCallObject {
     std::string id;
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     UNKNOWN_TYPE function;
 };
 
@@ -2144,12 +2144,12 @@ struct StaticChunkingStrategy {
 };
 
 struct StaticChunkingStrategyRequestParam {
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     StaticChunkingStrategy static;
 };
 
 struct StaticChunkingStrategyResponseParam {
-    std::string  // or generate an enum type;
+    std::string type; // or generate an enum type
     StaticChunkingStrategy static;
 };
 
@@ -2160,7 +2160,7 @@ struct SubmitToolOutputsRunRequest {
 
 struct ThreadObject {
     std::string id;
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     int created_at;
     UNKNOWN_TYPE tool_resources;
     UNKNOWN_TYPE metadata;
@@ -2200,9 +2200,9 @@ struct Upload {
     std::string filename;
     int bytes;
     std::string purpose;
-    std::string  // or generate an enum status;
+    std::string status; // or generate an enum type
     int expires_at;
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     OpenAIFile file;
 };
 
@@ -2210,11 +2210,11 @@ struct UploadPart {
     std::string id;
     int created_at;
     std::string upload_id;
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
 };
 
 struct UsageAudioSpeechesResult {
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     int characters;
     int num_model_requests;
     std::string project_id;
@@ -2224,7 +2224,7 @@ struct UsageAudioSpeechesResult {
 };
 
 struct UsageAudioTranscriptionsResult {
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     int seconds;
     int num_model_requests;
     std::string project_id;
@@ -2234,13 +2234,13 @@ struct UsageAudioTranscriptionsResult {
 };
 
 struct UsageCodeInterpreterSessionsResult {
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     int sessions;
     std::string project_id;
 };
 
 struct UsageCompletionsResult {
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     int input_tokens;
     int input_cached_tokens;
     int output_tokens;
@@ -2255,7 +2255,7 @@ struct UsageCompletionsResult {
 };
 
 struct UsageEmbeddingsResult {
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     int input_tokens;
     int num_model_requests;
     std::string project_id;
@@ -2265,7 +2265,7 @@ struct UsageEmbeddingsResult {
 };
 
 struct UsageImagesResult {
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     int images;
     int num_model_requests;
     std::string source;
@@ -2277,7 +2277,7 @@ struct UsageImagesResult {
 };
 
 struct UsageModerationsResult {
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     int input_tokens;
     int num_model_requests;
     std::string project_id;
@@ -2287,42 +2287,42 @@ struct UsageModerationsResult {
 };
 
 struct UsageResponse {
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     std::vector<UsageTimeBucket> data;
     bool has_more;
     std::string next_page;
 };
 
 struct UsageTimeBucket {
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     int start_time;
     int end_time;
     std::vector<UNKNOWN_TYPE> result;
 };
 
 struct UsageVectorStoresResult {
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     int usage_bytes;
     std::string project_id;
 };
 
 struct User {
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     std::string id;
     std::string name;
     std::string email;
-    std::string  // or generate an enum role;
+    std::string role; // or generate an enum type
     int added_at;
 };
 
 struct UserDeleteResponse {
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     std::string id;
     bool deleted;
 };
 
 struct UserListResponse {
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     std::vector<User> data;
     std::string first_id;
     std::string last_id;
@@ -2330,37 +2330,37 @@ struct UserListResponse {
 };
 
 struct UserRoleUpdateRequest {
-    std::string  // or generate an enum role;
+    std::string role; // or generate an enum type
 };
 
 struct VectorStoreFileBatchObject {
     std::string id;
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     int created_at;
     std::string vector_store_id;
-    std::string  // or generate an enum status;
+    std::string status; // or generate an enum type
     UNKNOWN_TYPE file_counts;
 };
 
 struct VectorStoreFileObject {
     std::string id;
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     int usage_bytes;
     int created_at;
     std::string vector_store_id;
-    std::string  // or generate an enum status;
+    std::string status; // or generate an enum type
     UNKNOWN_TYPE last_error;
     UNKNOWN_TYPE chunking_strategy;
 };
 
 struct VectorStoreObject {
     std::string id;
-    std::string  // or generate an enum object;
+    std::string object; // or generate an enum type
     int created_at;
     std::string name;
     int usage_bytes;
     UNKNOWN_TYPE file_counts;
-    std::string  // or generate an enum status;
+    std::string status; // or generate an enum type
     VectorStoreExpirationAfter expires_after;
     int expires_at;
     int last_active_at;
