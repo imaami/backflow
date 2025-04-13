@@ -115,7 +115,7 @@ class OAI:
                 timestamp_granularities = ["word", "segment"], **kwargs)
             x = raw.parse()
             #print(x)
-            #print(raw.text)
+            print(raw.text)
             #words, segms = parse_transcription(x)
             #for w in words:
             #    print(w)
@@ -252,12 +252,12 @@ Environment variables:
 def main() -> int:
     bfw = Backflow()
     a = bfw.get_transcript()
-    b = bfw.get_revised()
+    #b = bfw.get_revised()
 
-    print("<<<<<<<\n{a}{a_nl}=======\n{b}{b_nl}>>>>>>>".format(
-        a = a if a else "", a_nl = "\n" if a else "",
-        b = b if b else "", b_nl = "\n" if b else ""
-    ))
+    #print("<<<<<<<\n{a}{a_nl}=======\n{b}{b_nl}>>>>>>>".format(
+    #    a = a if a else "", a_nl = "\n" if a else "",
+    #    b = b if b else "", b_nl = "\n" if b else ""
+    #))
 
 if __name__ == "__main__":
     sys.exit(main())
